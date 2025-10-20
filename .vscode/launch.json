@@ -18,6 +18,17 @@
             "mainClass": "com.terrabia.terra_registry_service.TerraRegistryServiceApplication",
             "projectName": "terra-registry-service",
             "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=43283 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=terra-registry-service"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-TerraProxyServiceApplication<terra-proxy-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.terrabia.terra_proxy_service.TerraProxyServiceApplication",
+            "projectName": "terra-proxy-service",
+            "args": "",
             "envFile": "${workspaceFolder}/.env"
         }
     ]

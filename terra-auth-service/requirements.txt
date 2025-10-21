@@ -6,7 +6,7 @@ charset-normalizer==2.0.12
 Django==3.2.9
 djangorestframework==3.12.4
 idna==3.11
-psycopg2-binary==2.9.1
+mysqlclient==2.1.1
 pycparser==2.23
 PyJWT==2.3.0
 python-dotenv==0.19.0

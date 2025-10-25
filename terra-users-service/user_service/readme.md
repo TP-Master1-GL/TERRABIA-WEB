@@ -12,3 +12,11 @@ POST	/users/	                Créer un utilisateur (admin)	Admin
 GET	    /users/<id>/	        Détails utilisateur	Authentifié
 PATCH	/users/<id>/	        Modifier utilisateur	Admin
 DELETE	/users/<id>/	        Supprimer utilisateur	Admin
+
+
+
+## Lancement des test 
+
+chmod +x run_tests.sh
+./run_tests.sh
+

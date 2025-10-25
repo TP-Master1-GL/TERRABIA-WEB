@@ -17,11 +17,18 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import EmailVerificationToken
 from .serializers import (
     PasswordResetRequestSerializer,
-    PasswordResetConfirmSerializer
+    PasswordResetConfirmSerializer,
+    RegisterSerializer,
+    LoginSerializer,
+    UserSerializer
 )
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
-from .models import EmailVerificationToken
-from .utils import publish_event
+from .events import (
+    publish_user_created,
+    publish_user_updated,
+    publish_user_deleted,
+    publish_password_reset_requested,
+    publish_email_verified
+)
 
 User = get_user_model()
 
@@ -42,13 +49,8 @@ class RegisterView(generics.CreateAPIView):
 
         refresh = RefreshToken.for_user(user)
 
-        # Publier un événement (RabbitMQ)
-        publish_event('user_created', {
-            'user_id': user.id,
-            'email': user.email,
-            'role': user.role,
-            'created_at': user.date_joined.isoformat()
-        })
+        # Publier un événement de création d'utilisateur
+        publish_user_created(user)
 
         return Response({
             'user': UserSerializer(user).data,
@@ -78,25 +80,13 @@ class LoginView(generics.GenericAPIView):
         return Response({'detail': 'Identifiants invalides'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-
-User = get_user_model()
-
-
 # ----------------------------
 # 1️⃣ Demande de réinitialisation de mot de passe
 # ----------------------------
-
-# @api_view(['POST'])
-# @permission_classes([])
-
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def password_reset_request(request):
-    """
-    L’utilisateur envoie son email.
-    On génère un token temporaire et on envoie un lien de réinitialisation.
-    """
     serializer = PasswordResetRequestSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -132,24 +122,19 @@ def password_reset_request(request):
     except Exception as e:
         return Response({'error': f"Erreur d’envoi d’email : {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    # Publier un événement de demande de réinitialisation
+    publish_password_reset_requested(user, token)
+
     return Response({'message': 'Email de réinitialisation envoyé avec succès.'}, status=status.HTTP_200_OK)
 
 
 # ----------------------------
 # 2️⃣ Confirmation de réinitialisation
 # ----------------------------
-
-# @api_view(['POST'])
-# @permission_classes([])
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
-
 def password_reset_confirm(request, token):
-    """
-    L’utilisateur fournit le token et un nouveau mot de passe.
-    Si le token est valide et non expiré, on met à jour le mot de passe.
-    """
     serializer = PasswordResetConfirmSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -161,24 +146,21 @@ def password_reset_confirm(request, token):
     except EmailVerificationToken.DoesNotExist:
         return Response({'error': 'Token invalide ou déjà utilisé.'}, status=status.HTTP_404_NOT_FOUND)
 
-    # Vérification expiration
     if reset_token.expires_at < timezone.now():
         reset_token.delete()
         return Response({'error': 'Le lien de réinitialisation a expiré.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Mettre à jour le mot de passe
     user = reset_token.user
     user.set_password(new_password)
     user.save()
-
-    # Supprimer le token après utilisation
     reset_token.delete()
 
     return Response({'message': 'Mot de passe réinitialisé avec succès.'}, status=status.HTTP_200_OK)
 
 
-
-
+# ----------------------------
+# Profil utilisateur
+# ----------------------------
 class ProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
@@ -190,10 +172,17 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         user = self.get_object()
         serializer = self.get_serializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        user = serializer.save()
+
+        # Publier événement mise à jour profil
+        publish_user_updated(user)
+
         return Response(serializer.data)
 
 
+# ----------------------------
+# Vérification email
+# ----------------------------
 class VerifyEmailView(APIView):
     permission_classes = (AllowAny,)
 
@@ -205,18 +194,17 @@ class VerifyEmailView(APIView):
         user.is_verified = True
         user.save()
         token_obj.delete()
+
+        # Publier événement email vérifié
+        publish_email_verified(user)
+
         return Response({'detail': 'Email vérifié avec succès'}, status=status.HTTP_200_OK)
 
 
 # ---------------------------
 # CRUD COMPLET SUR LES USERS
 # ---------------------------
-
 class UserListCreateView(generics.ListCreateAPIView):
-    """
-    - GET → liste des utilisateurs
-    - POST → créer un utilisateur (admin)
-    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
@@ -226,31 +214,32 @@ class UserListCreateView(generics.ListCreateAPIView):
 
     def get_permissions(self):
         if self.request.method == 'POST':
-            return [IsAdminUser()]  # seuls les admins peuvent créer manuellement un user
+            return [IsAdminUser()]
         return [IsAuthenticated()]
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        publish_user_created(user)
 
 
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    - GET → récupérer un utilisateur par ID
-    - PUT/PATCH → modifier un utilisateur
-    - DELETE → supprimer un utilisateur
-    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
-        # Seuls les admins ou le propriétaire peuvent modifier / supprimer
         if self.request.method in ['PUT', 'PATCH', 'DELETE']:
             if not (self.request.user.is_superuser or self.request.user.is_staff):
                 self.permission_denied(self.request, message="Non autorisé.")
         return super().get_permissions()
 
+    def perform_update(self, serializer):
+        user = serializer.save()
+        publish_user_updated(user)
+
     def delete(self, request, *args, **kwargs):
         user = self.get_object()
         user_id = user.id
         response = super().delete(request, *args, **kwargs)
-        # Publier un événement de suppression
-        publish_event('user_deleted', {'user_id': user_id})
+        publish_user_deleted(user_id)
         return response

@@ -1,0 +1,12 @@
+{
+  "event_type": "user.verified",
+  "description": "L'utilisateur a confirmé son email",
+  "exchange": "user.events",
+  "routing_key": "user.verified",
+  "queue": "queue.user.verified",
+  "payload": {
+    "user_id": "int",
+    "email": "string",
+    "is_verified": "bool"
+  }
+}

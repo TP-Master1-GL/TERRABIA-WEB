@@ -10,4 +10,5 @@ app_name = 'order_app'
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('health/', views.HealthCheckView.as_view(), name='health_check'),
 ]

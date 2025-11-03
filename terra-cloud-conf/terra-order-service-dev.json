@@ -1,0 +1,156 @@
+{
+  "name": "terra-order-transaction-service",
+  "version": "1.0.0",
+  "server": {
+    "port": 8086
+  },
+  "secret_key": "terra-order-service-secret-2024-real-secret-change-in-production",
+  "debug": true,
+  "database": {
+    "name": "terra_orders_db",
+    "username": "terra_user",
+    "password": "terra_password", 
+    "host": "localhost",
+    "port": "5432"
+  },
+  "rabbitmq": {
+    "host": "localhost",
+    "port": 5672,
+    "username": "guest",
+    "password": "guest",
+    "virtual-host": "/"
+  },
+  "redis": {
+    "host": "localhost", 
+    "port": 6379
+  },
+  "jwt": {
+    "service_secret": "terra-order-service-secret-2024",
+    "expiration_hours": 24
+  },
+  "order": {
+    "status": {
+      "pending": "PENDING",
+      "confirmed": "CONFIRMED", 
+      "paid": "PAID",
+      "in_delivery": "IN_DELIVERY",
+      "delivered": "DELIVERED",
+      "completed": "COMPLETED",
+      "cancelled": "CANCELLED"
+    },
+    "autoconfirm_enabled": false,
+    "expiration_hours": 24,
+    "max_items_per_order": 20,
+    "auto_cancel_unpaid_hours": 24,
+    "number_prefix": "TRB"
+  },
+  "transaction": {
+    "types": {
+      "payment": "PAYMENT",
+      "refund": "REFUND", 
+      "commission": "COMMISSION",
+      "payout": "PAYOUT"
+    },
+    "payment_methods": {
+      "mobile_money": "MOBILE_MONEY",
+      "orange_money": "ORANGE_MONEY", 
+      "mtn_momo": "MTN_MOMO",
+      "cash": "CASH",
+      "bank_transfer": "BANK_TRANSFER"
+    },
+    "status": {
+      "pending": "PENDING",
+      "processing": "PROCESSING",
+      "success": "SUCCESS", 
+      "failed": "FAILED",
+      "reversed": "REVERSED"
+    },
+    "reference_prefix": "TXN",
+    "max_retry_attempts": 3,
+    "retry_delay_seconds": 30
+  },
+  "payment": {
+    "simulation_enabled": true,
+    "simulation_success_rate": 0.95,
+    "simulation_delay_seconds": 2,
+    "platform_commission_rate": 5.0,
+    "timeout_minutes": 30,
+    "confirmation_required": true
+  },
+  "delivery": {
+    "base_fee": 500,
+    "distance_rate": 100, 
+    "free_threshold": 10000,
+    "estimated_hours_min": 2,
+    "estimated_hours_max": 6
+  },
+  "stock": {
+    "reservation_enabled": true,
+    "reservation_duration_minutes": 30,
+    "auto_release_enabled": true
+  },
+  "notifications": {
+    "order_created_enabled": true,
+    "order_paid_enabled": true,
+    "order_cancelled_enabled": true,
+    "order_delivered_enabled": true,
+    "payment_failed_enabled": true
+  },
+  "events": {
+    "order_created": "order.created",
+    "order_paid": "order.paid",
+    "order_cancelled": "order.cancelled", 
+    "order_status_updated": "order.status.updated",
+    "transaction_created": "transaction.created",
+    "transaction_completed": "transaction.completed"
+  },
+  "queues": {
+    "order_payments": "order_payments_queue",
+    "order_notifications": "order_notifications_queue"
+  },
+  "rate_limits": {
+    "order_per_user": 10,
+    "order_per_hour": 100,
+    "transaction_per_user": 5,
+    "payment_per_user": 3
+  },
+  "timeouts": {
+    "api_seconds": 30,
+    "external_service_seconds": 60
+  },
+  "features": {
+    "multi_currency_enabled": false,
+    "advanced_reporting_enabled": false,
+    "bulk_operations_enabled": true,
+    "real_time_tracking_enabled": true,
+    "automatic_refunds_enabled": true
+  },
+  "currency": {
+    "default": "XAF",
+    "supported": ["XAF", "XOF", "EUR", "USD"],
+    "conversion_enabled": false
+  },
+  "audit": {
+    "trail_enabled": true,
+    "retention_days": 90,
+    "sensitive_data_masking": true
+  },
+  "health_check": {
+    "timeout_seconds": 10,
+    "database_enabled": true,
+    "rabbitmq_enabled": true,
+    "redis_enabled": true
+  },
+  "logging": {
+    "level": {
+      "order_service": "DEBUG",
+      "transaction_service": "DEBUG", 
+      "payment_service": "DEBUG"
+    },
+    "files": {
+      "order": "logs/order-service.log",
+      "transaction": "logs/transaction-service.log",
+      "payment": "logs/payment-service.log"
+    }
+  }
+}

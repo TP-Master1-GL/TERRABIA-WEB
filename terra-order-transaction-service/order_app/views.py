@@ -6,6 +6,12 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.http import JsonResponse
 from .models import Order, OrderItem, Transaction, PaymentAttempt
+from django.http import JsonResponse
+from django.views import View
+from django.db import connection
+import redis
+import requests
+
 from .serializers import (
     OrderSerializer, CreateOrderSerializer, UpdateOrderStatusSerializer,
     TransactionSerializer, CreateTransactionSerializer
@@ -362,3 +368,43 @@ def error_500(request):
         'status_code': 500,
         'service': 'terra-order-transaction-service'
     }, status=500)
+    
+    
+    
+
+
+class HealthCheckView(View):
+    def get(self, request):
+        # Vérifier la base de données
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
+            db_status = "UP"
+        except Exception:
+            db_status = "DOWN"
+
+        # Vérifier Redis
+        try:
+            r = redis.Redis(
+                host=settings.CHANNEL_LAYERS['default']['CONFIG']['hosts'][0][0],
+                port=settings.CHANNEL_LAYERS['default']['CONFIG']['hosts'][0][1],
+                socket_connect_timeout=3
+            )
+            r.ping()
+            redis_status = "UP"
+        except Exception:
+            redis_status = "DOWN"
+
+        health_status = {
+            "status": "UP" if db_status == "UP" else "DOWN",
+            "components": {
+                "db": {
+                    "status": db_status
+                },
+                "redis": {
+                    "status": redis_status
+                }
+            }
+        }
+
+        return JsonResponse(health_status)

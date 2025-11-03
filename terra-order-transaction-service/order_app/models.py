@@ -1,20 +1,27 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 from decimal import Decimal
 import uuid
+from .config_utils import (
+    get_order_status_choices,
+    get_transaction_type_choices,
+    get_payment_method_choices,
+    get_transaction_status_choices,
+    get_order_number_prefix,
+    get_transaction_reference_prefix,
+    get_platform_commission_rate,
+    get_delivery_base_fee,
+    get_delivery_free_threshold,
+    is_payment_simulation_enabled,
+    get_payment_simulation_success_rate
+)
 
 class Order(models.Model):
     """Modèle représentant une commande"""
     
-    STATUS_CHOICES = [
-        ('PENDING', 'En attente'),
-        ('CONFIRMED', 'Confirmée'),
-        ('PAID', 'Payée'),
-        ('IN_DELIVERY', 'En livraison'),
-        ('DELIVERED', 'Livrée'),
-        ('COMPLETED', 'Terminée'),
-        ('CANCELLED', 'Annulée'),
-    ]
+    # Les choix de statut sont maintenant dynamiques
+    STATUS_CHOICES = get_order_status_choices()
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     order_number = models.CharField(max_length=20, unique=True, editable=False)
@@ -23,8 +30,12 @@ class Order(models.Model):
     buyer_id = models.CharField(max_length=100, db_index=True)
     farmer_id = models.CharField(max_length=100, db_index=True)
     
-    # Statut et dates
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    # Statut et dates - utilisation du statut par défaut depuis la config
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES, 
+        default=STATUS_CHOICES[0][0] if STATUS_CHOICES else 'PENDING'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     confirmed_at = models.DateTimeField(null=True, blank=True)
@@ -48,6 +59,13 @@ class Order(models.Model):
         max_digits=10, 
         decimal_places=2, 
         validators=[MinValueValidator(Decimal('0.01'))]
+    )
+    
+    # Commission de la plateforme (calculée dynamiquement)
+    platform_commission = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00')
     )
     
     # Informations de livraison
@@ -80,11 +98,33 @@ class Order(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.order_number:
-            # Générer un numéro de commande unique
+            # Générer un numéro de commande unique avec le préfixe dynamique
             import datetime
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-            self.order_number = f"TRB{timestamp}{str(uuid.uuid4())[:4].upper()}"
+            prefix = get_order_number_prefix()
+            self.order_number = f"{prefix}{timestamp}{str(uuid.uuid4())[:4].upper()}"
+        
+        # Calculer la commission de la plateforme si nécessaire
+        if self.subtotal and not self.platform_commission:
+            commission_rate = Decimal(str(get_platform_commission_rate())) / Decimal('100')
+            self.platform_commission = self.subtotal * commission_rate
+        
+        # Calculer les frais de livraison si nécessaire
+        if self.delivery_fee == Decimal('0.00') and self.subtotal:
+            free_threshold = Decimal(str(get_delivery_free_threshold()))
+            base_fee = Decimal(str(get_delivery_base_fee()))
+            
+            if self.subtotal < free_threshold:
+                self.delivery_fee = base_fee
+        
+        # Recalculer le montant total
+        self.total_amount = self.subtotal + self.delivery_fee
+        
         super().save(*args, **kwargs)
+    
+    def get_status_display_name(self):
+        """Retourne le nom d'affichage du statut"""
+        return dict(self.STATUS_CHOICES).get(self.status, self.status)
 
 
 class OrderItem(models.Model):
@@ -135,28 +175,10 @@ class OrderItem(models.Model):
 class Transaction(models.Model):
     """Modèle représentant une transaction financière (Ledger)"""
     
-    TRANSACTION_TYPES = [
-        ('PAYMENT', 'Paiement'),
-        ('REFUND', 'Remboursement'),
-        ('COMMISSION', 'Commission'),
-        ('PAYOUT', 'Paiement agriculteur'),
-    ]
-    
-    PAYMENT_METHODS = [
-        ('MOBILE_MONEY', 'Mobile Money'),
-        ('ORANGE_MONEY', 'Orange Money'),
-        ('MTN_MOMO', 'MTN Mobile Money'),
-        ('CASH', 'Espèces'),
-        ('BANK_TRANSFER', 'Virement bancaire'),
-    ]
-    
-    STATUS_CHOICES = [
-        ('PENDING', 'En attente'),
-        ('PROCESSING', 'En traitement'),
-        ('SUCCESS', 'Réussie'),
-        ('FAILED', 'Échouée'),
-        ('REVERSED', 'Annulée'),
-    ]
+    # Les choix sont maintenant dynamiques
+    TRANSACTION_TYPES = get_transaction_type_choices()
+    PAYMENT_METHODS = get_payment_method_choices()
+    STATUS_CHOICES = get_transaction_status_choices()
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     transaction_reference = models.CharField(max_length=100, unique=True, editable=False)
@@ -165,8 +187,16 @@ class Transaction(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='transactions')
     
     # Type et méthode
-    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
+    transaction_type = models.CharField(
+        max_length=20, 
+        choices=TRANSACTION_TYPES,
+        default=TRANSACTION_TYPES[0][0] if TRANSACTION_TYPES else 'PAYMENT'
+    )
+    payment_method = models.CharField(
+        max_length=20, 
+        choices=PAYMENT_METHODS,
+        default=PAYMENT_METHODS[0][0] if PAYMENT_METHODS else 'MOBILE_MONEY'
+    )
     
     # Montants
     amount = models.DecimalField(
@@ -180,13 +210,20 @@ class Transaction(models.Model):
     payee_id = models.CharField(max_length=100)
     
     # Statut et dates
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES, 
+        default=STATUS_CHOICES[0][0] if STATUS_CHOICES else 'PENDING'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     processed_at = models.DateTimeField(null=True, blank=True)
     
     # Informations du provider de paiement
     provider_transaction_id = models.CharField(max_length=255, blank=True, null=True)
     provider_response = models.JSONField(blank=True, null=True)
+    
+    # Simulation de paiement
+    is_simulated = models.BooleanField(default=False)
     
     # Notes
     description = models.TextField(blank=True)
@@ -210,8 +247,49 @@ class Transaction(models.Model):
         if not self.transaction_reference:
             import datetime
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-            self.transaction_reference = f"TXN{timestamp}{str(uuid.uuid4())[:6].upper()}"
+            prefix = get_transaction_reference_prefix()
+            self.transaction_reference = f"{prefix}{timestamp}{str(uuid.uuid4())[:6].upper()}"
+        
+        # Marquer comme simulé si la simulation est activée
+        if not self.is_simulated and is_payment_simulation_enabled():
+            self.is_simulated = True
+        
         super().save(*args, **kwargs)
+    
+    def process_payment(self):
+        """Traite le paiement (simulé ou réel)"""
+        from decimal import Decimal
+        import random
+        
+        if self.is_simulated:
+            # Simulation de paiement
+            success_rate = get_payment_simulation_success_rate()
+            success = random.random() < success_rate
+            
+            if success:
+                self.status = 'SUCCESS'
+                self.provider_response = {
+                    'simulated': True,
+                    'success': True,
+                    'message': 'Paiement simulé réussi'
+                }
+            else:
+                self.status = 'FAILED'
+                self.failure_reason = 'Échec de paiement simulé'
+                self.provider_response = {
+                    'simulated': True,
+                    'success': False,
+                    'message': 'Paiement simulé échoué'
+                }
+            
+            self.processed_at = timezone.now()
+            self.save()
+            
+            return success
+        else:
+            # Ici, intégration avec un vrai provider de paiement
+            # À implémenter selon le provider choisi
+            pass
 
 
 class PaymentAttempt(models.Model):

@@ -328,3 +328,38 @@ INFO 2025-11-03 14:38:49,162 autoreload /home/john-nguembu/TERRABIA-WEB/terra-or
 INFO 2025-11-03 14:38:49,895 autoreload Watching for file changes with StatReloader
 INFO 2025-11-03 14:38:56,574 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
 INFO 2025-11-03 14:38:57,317 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 14:46:57,110 autoreload Watching for file changes with StatReloader
+ERROR 2025-11-03 14:47:15,947 log Internal Server Error: /
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/utils/deprecation.py", line 133, in __call__
+    response = self.process_request(request)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/contrib/messages/middleware.py", line 12, in process_request
+    request._messages = default_storage(request)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/contrib/messages/storage/__init__.py", line 12, in default_storage
+    return import_string(settings.MESSAGE_STORAGE)(request)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/contrib/messages/storage/fallback.py", line 16, in __init__
+    self.storages = [
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/contrib/messages/storage/fallback.py", line 17, in <listcomp>
+    storage_class(*args, **kwargs) for storage_class in self.storage_classes
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/contrib/messages/storage/cookie.py", line 77, in __init__
+    self.signer = signing.get_cookie_signer(salt=self.key_salt)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/core/signing.py", line 114, in get_cookie_signer
+    key=_cookie_signer_key(settings.SECRET_KEY),
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/conf/__init__.py", line 111, in __getattr__
+    raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+ERROR 2025-11-03 14:47:15,955 basehttp "GET / HTTP/1.1" 500 100
+INFO 2025-11-03 15:00:50,269 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 15:04:47,569 basehttp "GET / HTTP/1.1" 200 431
+WARNING 2025-11-03 15:04:47,662 log Not Found: /favicon.ico
+WARNING 2025-11-03 15:04:47,663 basehttp "GET /favicon.ico HTTP/1.1" 404 3568
+INFO 2025-11-03 15:07:16,300 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 15:07:21,393 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 15:07:25,959 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 15:07:29,286 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 15:11:22,035 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/order_app/models.py changed, reloading.
+INFO 2025-11-03 15:11:26,730 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 15:11:35,504 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/order_app/models.py changed, reloading.
+INFO 2025-11-03 15:11:39,567 autoreload Watching for file changes with StatReloader

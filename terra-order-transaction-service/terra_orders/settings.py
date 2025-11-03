@@ -1,5 +1,7 @@
 import os, sys
 import environ
+import requests
+import json
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -9,9 +11,193 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = env('SECRET_KEY', default='terra-order-secret-key-2024')
-DEBUG = env.bool('DEBUG', default=True)
-ALLOWED_HOSTS = ['*']
+# Configuration Service
+CONFIG_SERVICE_URL = env('CONFIG_SERVICE_URL', default='http://localhost:8080')
+SERVICE_NAME = env('SERVICE_NAME', default='terra-order-transaction-service')
+SERVICE_PROFILE = env('SERVICE_PROFILE', default='dev')
+
+def get_config_from_config_service():
+    """
+    Récupère la configuration depuis le service de configuration Spring Boot
+    """
+    config_url = f"{CONFIG_SERVICE_URL}/{SERVICE_NAME}-{SERVICE_PROFILE}.json"
+    
+    try:
+        print(f"🔧 Tentative de récupération de la configuration depuis: {config_url}")
+        response = requests.get(config_url, timeout=10)
+        response.raise_for_status()
+        
+        config_data = response.json()
+        print("✅ Configuration récupérée avec succès depuis le service de configuration")
+        print(f"📋 Données reçues: {json.dumps(config_data, indent=2)}")
+        return config_data
+        
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Impossible de récupérer la configuration: {e}")
+        print("🔄 Utilisation des valeurs par défaut...")
+        return {}
+
+def setup_configuration():
+    """
+    Configure l'application avec les valeurs du service de configuration ou les valeurs par défaut
+    """
+    config_data = get_config_from_config_service()
+    
+    # Debug - Toujours afficher ce qu'on reçoit
+    if config_data:
+        print(f"🎯 Configuration reçue: {list(config_data.keys())}")
+    
+    # SECRET_KEY - avec fallback robuste
+    secret_key = None
+    if config_data:
+        # Essayer plusieurs chemins possibles pour la secret key
+        secret_key = (
+            config_data.get('jwt', {}).get('service', {}).get('secret') or
+            config_data.get('jwt', {}).get('service-secret') or
+            config_data.get('secret_key') or
+            config_data.get('security', {}).get('secret-key')
+        )
+    
+    # DEBUG
+    debug = env.bool('DEBUG', default=True)
+    
+    # PORT - Récupération robuste
+    server_port = None
+    if config_data:
+        server_port = (
+            config_data.get('server', {}).get('port') or
+            config_data.get('server.port') or
+            config_data.get('port')
+        )
+    
+    # Database configuration robuste
+    db_config = {}
+    if config_data:
+        # Essayer différents chemins pour la config DB
+        db_config = (
+            config_data.get('spring', {}).get('datasource') or
+            config_data.get('database') or
+            config_data.get('db') or
+            {}
+        )
+    
+    # RabbitMQ configuration robuste
+    rabbitmq_config = {}
+    if config_data:
+        rabbitmq_config = (
+            config_data.get('spring', {}).get('rabbitmq') or
+            config_data.get('rabbitmq') or
+            {}
+        )
+    
+    # Redis configuration robuste
+    redis_config = {}
+    if config_data:
+        redis_config = (
+            config_data.get('spring', {}).get('redis') or
+            config_data.get('redis') or
+            {}
+        )
+    
+    return {
+        'secret_key': secret_key,
+        'debug': debug,
+        'server_port': server_port,
+        'db_config': db_config or {},  # S'assurer que c'est toujours un dict
+        'rabbitmq_config': rabbitmq_config or {},
+        'redis_config': redis_config or {},
+        'config_data': config_data
+    }
+
+# Chargement de la configuration
+app_config = setup_configuration()
+
+BUSINESS_CONFIG = {}
+
+if app_config['config_data']:
+    BUSINESS_CONFIG = {
+        'ORDER_CONFIG': app_config['config_data'].get('order', {}),
+        'TRANSACTION_CONFIG': app_config['config_data'].get('transaction', {}),
+        'PAYMENT_CONFIG': app_config['config_data'].get('payment', {}),
+        'DELIVERY_CONFIG': app_config['config_data'].get('delivery', {}),
+        'STOCK_CONFIG': app_config['config_data'].get('stock', {}),
+        'NOTIFICATION_CONFIG': app_config['config_data'].get('notifications', {}),
+        'EVENTS_CONFIG': app_config['config_data'].get('events', {}),
+        'QUEUES_CONFIG': app_config['config_data'].get('queues', {}),
+        'RATE_LIMITS': app_config['config_data'].get('rate_limits', {}),
+        'TIMEOUTS': app_config['config_data'].get('timeouts', {}),
+        'FEATURES': app_config['config_data'].get('features', {}),
+        'CURRENCY': app_config['config_data'].get('currency', {}),
+        'AUDIT': app_config['config_data'].get('audit', {}),
+        'HEALTH_CHECK': app_config['config_data'].get('health_check', {}),
+        'LOGGING_CONFIG': app_config['config_data'].get('logging', {}),
+    }
+else:
+    # Fallback configuration
+    BUSINESS_CONFIG = {
+        'ORDER_CONFIG': {
+            'status': {
+                'pending': 'PENDING',
+                'confirmed': 'CONFIRMED',
+                'paid': 'PAID',
+                'in_delivery': 'IN_DELIVERY',
+                'delivered': 'DELIVERED',
+                'completed': 'COMPLETED',
+                'cancelled': 'CANCELLED'
+            },
+            'autoconfirm_enabled': False,
+            'expiration_hours': 24,
+            'max_items_per_order': 20,
+            'number_prefix': 'TRB'
+        },
+        'TRANSACTION_CONFIG': {
+            'types': {
+                'payment': 'PAYMENT',
+                'refund': 'REFUND',
+                'commission': 'COMMISSION',
+                'payout': 'PAYOUT'
+            },
+            'payment_methods': {
+                'mobile_money': 'MOBILE_MONEY',
+                'orange_money': 'ORANGE_MONEY',
+                'mtn_momo': 'MTN_MOMO',
+                'cash': 'CASH',
+                'bank_transfer': 'BANK_TRANSFER'
+            },
+            'status': {
+                'pending': 'PENDING',
+                'processing': 'PROCESSING',
+                'success': 'SUCCESS',
+                'failed': 'FAILED',
+                'reversed': 'REVERSED'
+            },
+            'reference_prefix': 'TXN'
+        },
+        'PAYMENT_CONFIG': {
+            'simulation_enabled': True,
+            'simulation_success_rate': 0.95,
+            'platform_commission_rate': 5.0
+        },
+        'DELIVERY_CONFIG': {
+            'base_fee': 500,
+            'free_threshold': 10000
+        }
+    }
+
+# Rendre BUSINESS_CONFIG disponible dans tous les modules
+import sys
+sys.modules[__name__].__dict__['BUSINESS_CONFIG'] = BUSINESS_CONFIG
+
+# Configuration Django de base avec fallbacks robustes
+SECRET_KEY = app_config['secret_key'] or env('SECRET_KEY', default='terra-order-service-secret-key-2024')
+DEBUG = app_config['debug']
+SERVICE_PORT = app_config['server_port'] or env.int('SERVICE_PORT', default=8000)
+ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1', '0.0.0.0']
+
+print(f"🔧 Configuration finale:")
+print(f"   - SECRET_KEY: {'***' + SECRET_KEY[-5:] if SECRET_KEY else 'NONE'}")
+print(f"   - DEBUG: {DEBUG}")
+print(f"   - SERVICE_PORT: {SERVICE_PORT}")
 
 # Application definition
 INSTALLED_APPS = [
@@ -61,15 +247,35 @@ TEMPLATES = [
 WSGI_APPLICATION = 'terra_orders.wsgi.application'
 ASGI_APPLICATION = 'terra_orders.asgi.application'
 
-# Database
+# Database Configuration avec fallbacks robustes
+db_config = app_config['db_config']
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME', default='terra_orders_db'),
-        'USER': env('DB_USER', default='terra_user'),
-        'PASSWORD': env('DB_PASSWORD', default='terra_password'),
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default='5432'),
+        'NAME': (
+            db_config.get('name') or 
+            db_config.get('database') or
+            env('DB_NAME', default='terra_orders_db')
+        ),
+        'USER': (
+            db_config.get('username') or 
+            db_config.get('user') or
+            env('DB_USER', default='terra_user')
+        ),
+        'PASSWORD': (
+            db_config.get('password') or 
+            env('DB_PASSWORD', default='terra_password')
+        ),
+        'HOST': (
+            db_config.get('host') or 
+            db_config.get('hostname') or
+            env('DB_HOST', default='localhost')
+        ),
+        'PORT': (
+            db_config.get('port') or 
+            env('DB_PORT', default='5432')
+        ),
     }
 }
 
@@ -114,34 +320,68 @@ REST_FRAMEWORK = {
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    f"http://localhost:{SERVICE_PORT}",
+    f"http://127.0.0.1:{SERVICE_PORT}",
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Service Configuration
 SERVICE_CONFIG = {
-    'name': 'terra-order-transaction-service',
+    'name': SERVICE_NAME,
     'version': '1.0.0',
+    'port': SERVICE_PORT,
 }
 
 # Microservices URLs
 MICROSERVICES = {
-    # 'user_service': env('USER_SERVICE_URL', default='http://localhost:8001'),
-    # 'catalog_service': env('CATALOG_SERVICE_URL', default='http://localhost:8002'),
-    # 'logistics_service': env('LOGISTICS_SERVICE_URL', default='http://localhost:8003'),
-    # 'notification_service': env('NOTIFICATION_SERVICE_URL', default='http://localhost:8004'),
-    'config_service': env('CONFIG_SERVICE_URL', default='http://localhost:8080'),
+    'config_service': CONFIG_SERVICE_URL,
     'eureka_service': env('EUREKA_SERVICE_URL', default='http://localhost:8761/eureka'),
 }
 
-# RabbitMQ Configuration
+# RabbitMQ Configuration avec fallbacks
+rabbitmq_config = app_config['rabbitmq_config']
+
 RABBITMQ = {
-    'host': env('RABBITMQ_HOST', default='localhost'),
-    'port': env('RABBITMQ_PORT', default=5672),
-    'username': env('RABBITMQ_USERNAME', default='terra_user'),
-    'password': env('RABBITMQ_PASSWORD', default='terra_passwoed'),
-    'vhost': env('RABBITMQ_VHOST', default='terra_vhost'),
+    'host': (
+        rabbitmq_config.get('host') or 
+        rabbitmq_config.get('hostname') or
+        env('RABBITMQ_HOST', default='localhost')
+    ),
+    'port': (
+        rabbitmq_config.get('port') or 
+        env.int('RABBITMQ_PORT', default=5672)
+    ),
+    'username': (
+        rabbitmq_config.get('username') or 
+        rabbitmq_config.get('user') or
+        env('RABBITMQ_USERNAME', default='guest')
+    ),
+    'password': (
+        rabbitmq_config.get('password') or 
+        env('RABBITMQ_PASSWORD', default='guest')
+    ),
+    'vhost': (
+        rabbitmq_config.get('virtual-host') or 
+        rabbitmq_config.get('vhost') or
+        env('RABBITMQ_VHOST', default='/')
+    ),
 }
 
 # Celery Configuration
-CELERY_BROKER_URL = f"amqp://{RABBITMQ['username']}:{RABBITMQ['password']}@{RABBITMQ['host']}:{RABBITMQ['port']}//"
+CELERY_BROKER_URL = f"amqp://{RABBITMQ['username']}:{RABBITMQ['password']}@{RABBITMQ['host']}:{RABBITMQ['port']}/{RABBITMQ['vhost']}"
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
@@ -149,16 +389,23 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
 # Channels for WebSockets
+redis_config = app_config['redis_config']
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [(env('REDIS_HOST', default='localhost'), env('REDIS_PORT', default=6379))],
+            "hosts": [(
+                redis_config.get('host') or 
+                env('REDIS_HOST', default='localhost'),
+                redis_config.get('port') or 
+                env.int('REDIS_PORT', default=6379)
+            )],
         },
     },
 }
 
-# Logging - Configuration corrigée
+# Logging
 import logging.config
 LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 os.makedirs(LOGS_DIR, exist_ok=True)
@@ -207,11 +454,12 @@ LOGGING = {
     },
 }
 
-# Service Port
-SERVICE_PORT = env.int('SERVICE_PORT', default=8000)
-
 # Swagger Settings
-SWAGGER_SETTINGS = {
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Terrabia Order & Transaction Service API',
+    'DESCRIPTION': 'API for managing orders and transactions in Terrabia platform',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
     'SECURITY_DEFINITIONS': {
         'Bearer': {
             'type': 'apiKey',
@@ -220,27 +468,73 @@ SWAGGER_SETTINGS = {
             'description': 'JWT Token format: Bearer <token>'
         }
     },
-    'USE_SESSION_AUTH': False,
-    'JSON_EDITOR': True,
-    'DOC_EXPANSION': 'none',
-    'DEEP_LINKING': True,
 }
 
-# Redoc Settings
-REDOC_SETTINGS = {
-    'LAZY_RENDERING': False,
-    'HIDE_HOSTNAME': False,
-    'EXPAND_RESPONSES': ['200', '201'],
-}
+# Eureka Registration
+def register_with_eureka():
+    """
+    Enregistre le service auprès d'Eureka
+    """
+    eureka_url = env('EUREKA_SERVICE_URL', default='http://localhost:8761/eureka')
+    
+    try:
+        eureka_payload = {
+            "instance": {
+                "instanceId": f"{SERVICE_NAME}:{SERVICE_PORT}",
+                "app": SERVICE_NAME.upper().replace('-', '_'),
+                "hostName": "localhost",
+                "ipAddr": "127.0.0.1",
+                "status": "UP",
+                "port": {
+                    "$": int(SERVICE_PORT),
+                    "@enabled": "true",
+                },
+                "securePort": {
+                    "$": 8443,
+                    "@enabled": "false",
+                },
+                "healthCheckUrl": f"http://localhost:{SERVICE_PORT}/health/",
+                "statusPageUrl": f"http://localhost:{SERVICE_PORT}/admin/",
+                "homePageUrl": f"http://localhost:{SERVICE_PORT}/",
+                "vipAddress": SERVICE_NAME,
+                "secureVipAddress": SERVICE_NAME,
+                "dataCenterInfo": {
+                    "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                    "name": "MyOwn"
+                }
+            }
+        }
+        
+        print(f"🔧 Tentative d'enregistrement Eureka sur: {eureka_url}")
+        response = requests.post(
+            f"{eureka_url}/eureka/apps/{SERVICE_NAME.upper().replace('-', '_')}",
+            json=eureka_payload,
+            headers={'Content-Type': 'application/json'},
+            timeout=10
+        )
+        
+        if response.status_code in [200, 204]:
+            print("✅ Service enregistré auprès d'Eureka avec succès")
+        else:
+            print(f"⚠️ Eureka a retourné le statut: {response.status_code}")
+            print(f"⚠️ Réponse Eureka: {response.text}")
+            
+    except Exception as e:
+        print(f"⚠️ Erreur lors de l'enregistrement Eureka: {e}")
 
-
-# Configuration Spectacular
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'Terrabia Order & Transaction Service API',
-    'DESCRIPTION': 'API for managing orders and transactions in Terrabia platform',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-}
+# Enregistrement Eureka au démarrage
+if not 'test' in sys.argv and not 'migrate' in sys.argv and not 'collectstatic' in sys.argv:
+    import threading
+    import time
+    
+    def delayed_eureka_registration():
+        """Attendre que Django soit complètement démarré avant de s'enregistrer sur Eureka"""
+        time.sleep(3)
+        register_with_eureka()
+    
+    eureka_thread = threading.Thread(target=delayed_eureka_registration)
+    eureka_thread.daemon = True
+    eureka_thread.start()
 
 if 'test' in sys.argv:
     # Utiliser SQLite en mémoire pour les tests
@@ -258,3 +552,13 @@ if 'test' in sys.argv:
     # Désactiver RabbitMQ pour les tests
     CELERY_TASK_ALWAYS_EAGER = True
     CELERY_TASK_EAGER_PROPAGATES = True
+
+# Affichage de la configuration chargée
+print(f"\n🎯 Configuration finale du service {SERVICE_NAME}:")
+print(f"   Port: {SERVICE_PORT}")
+print(f"   Debug: {DEBUG}")
+print(f"   Secret Key: {'*' * 10}{SECRET_KEY[-5:] if SECRET_KEY else 'None'}")
+print(f"   Database: {DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}")
+print(f"   RabbitMQ: {RABBITMQ['host']}:{RABBITMQ['port']}")
+print(f"   Config Service: {CONFIG_SERVICE_URL}")
+print("✅ Configuration Django chargée avec succès!\n")

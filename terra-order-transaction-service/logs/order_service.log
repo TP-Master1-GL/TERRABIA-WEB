@@ -1,0 +1,325 @@
+INFO 2025-11-03 13:28:19,597 autoreload Watching for file changes with StatReloader
+WARNING 2025-11-03 13:28:24,273 log Not Found: /
+WARNING 2025-11-03 13:28:24,273 basehttp "GET / HTTP/1.1" 404 3554
+WARNING 2025-11-03 13:28:24,325 log Not Found: /favicon.ico
+WARNING 2025-11-03 13:28:24,326 basehttp "GET /favicon.ico HTTP/1.1" 404 3605
+INFO 2025-11-03 13:28:31,418 basehttp "GET /api HTTP/1.1" 301 0
+WARNING 2025-11-03 13:28:31,457 log Forbidden: /api/
+WARNING 2025-11-03 13:28:31,458 basehttp "GET /api/ HTTP/1.1" 403 4921
+INFO 2025-11-03 13:28:31,508 basehttp "GET /static/rest_framework/css/default.css HTTP/1.1" 200 1152
+INFO 2025-11-03 13:28:31,511 basehttp "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 200 3385
+INFO 2025-11-03 13:28:31,511 basehttp "GET /static/rest_framework/css/prettify.css HTTP/1.1" 200 817
+INFO 2025-11-03 13:28:31,513 basehttp "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 200 3597
+INFO 2025-11-03 13:28:31,515 basehttp "GET /static/rest_framework/js/csrf.js HTTP/1.1" 200 1719
+INFO 2025-11-03 13:28:31,516 basehttp "GET /static/rest_framework/js/jquery-3.5.1.min.js HTTP/1.1" 200 89476
+INFO 2025-11-03 13:28:31,519 basehttp "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 200 121457
+INFO 2025-11-03 13:28:31,522 basehttp "GET /static/rest_framework/js/default.js HTTP/1.1" 200 1268
+INFO 2025-11-03 13:28:31,524 basehttp "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 200 13632
+INFO 2025-11-03 13:28:31,525 basehttp "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 200 39680
+INFO 2025-11-03 13:28:31,574 basehttp "GET /static/rest_framework/img/grid.png HTTP/1.1" 200 1458
+WARNING 2025-11-03 13:28:39,683 log Not Found: /
+WARNING 2025-11-03 13:28:39,684 basehttp "GET / HTTP/1.1" 404 3554
+INFO 2025-11-03 13:28:53,212 basehttp "GET /swagger HTTP/1.1" 301 0
+ERROR 2025-11-03 13:28:53,257 log Internal Server Error: /swagger/
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/rest_framework/response.py", line 70, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/drf_yasg/renderers.py", line 79, in render
+    return render_to_string(self.template, renderer_context, renderer_context['request'])
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: drf-yasg/swagger-ui.html
+ERROR 2025-11-03 13:28:53,258 basehttp "GET /swagger/ HTTP/1.1" 500 107591
+WARNING 2025-11-03 13:29:03,547 log Not Found: /
+WARNING 2025-11-03 13:29:03,548 basehttp "GET / HTTP/1.1" 404 3554
+INFO 2025-11-03 13:29:16,130 basehttp "GET /redoc HTTP/1.1" 301 0
+ERROR 2025-11-03 13:29:16,204 log Internal Server Error: /redoc/
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/rest_framework/response.py", line 70, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/drf_yasg/renderers.py", line 79, in render
+    return render_to_string(self.template, renderer_context, renderer_context['request'])
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: drf-yasg/redoc.html
+ERROR 2025-11-03 13:29:16,204 basehttp "GET /redoc/ HTTP/1.1" 500 105857
+WARNING 2025-11-03 13:29:44,910 log Not Found: /api/health
+WARNING 2025-11-03 13:29:44,910 basehttp "GET /api/health HTTP/1.1" 404 8771
+INFO 2025-11-03 13:30:09,586 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 13:30:10,356 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 13:30:13,956 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 13:30:14,496 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 13:30:15,886 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 13:30:16,311 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 13:30:18,699 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 13:30:19,162 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 13:30:23,559 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 13:30:24,044 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 13:30:41,592 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 13:30:42,122 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 13:30:57,630 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 13:30:58,085 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 13:30:59,465 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 13:30:59,928 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 13:31:13,445 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 13:31:13,943 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 13:31:32,525 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 13:31:32,961 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 13:40:13,436 autoreload Watching for file changes with StatReloader
+WARNING 2025-11-03 13:40:17,358 log Not Found: /api/health
+WARNING 2025-11-03 13:40:17,359 basehttp "GET /api/health HTTP/1.1" 404 8736
+INFO 2025-11-03 13:40:23,611 basehttp "GET / HTTP/1.1" 200 431
+INFO 2025-11-03 13:40:54,784 basehttp "GET /api/docs HTTP/1.1" 301 0
+INFO 2025-11-03 13:40:54,810 basehttp "GET /api/docs/ HTTP/1.1" 200 4677
+INFO 2025-11-03 13:40:56,029 basehttp "GET /api/schema/ HTTP/1.1" 200 45973
+INFO 2025-11-03 13:41:10,944 basehttp "GET /api/redoc/ HTTP/1.1" 200 760
+INFO 2025-11-03 13:41:12,027 basehttp "GET /api/schema/ HTTP/1.1" 200 23015
+WARNING 2025-11-03 13:41:25,980 log Forbidden: /api/
+WARNING 2025-11-03 13:41:25,980 basehttp "GET /api/ HTTP/1.1" 403 4921
+INFO 2025-11-03 13:41:26,004 basehttp "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:26,014 basehttp "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:26,014 basehttp "GET /static/rest_framework/css/prettify.css HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:26,019 basehttp "GET /static/rest_framework/css/default.css HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:26,034 basehttp "GET /static/rest_framework/js/jquery-3.5.1.min.js HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:26,035 basehttp "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:26,037 basehttp "GET /static/rest_framework/js/default.js HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:26,038 basehttp "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:26,038 basehttp "GET /static/rest_framework/js/csrf.js HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:26,036 basehttp "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:26,046 basehttp "GET /static/rest_framework/img/grid.png HTTP/1.1" 304 0
+INFO 2025-11-03 13:41:36,221 basehttp "GET / HTTP/1.1" 200 431
+INFO 2025-11-03 13:41:50,647 basehttp "GET /api/orders HTTP/1.1" 301 0
+WARNING 2025-11-03 13:41:50,655 log Forbidden: /api/orders/
+WARNING 2025-11-03 13:41:50,655 basehttp "GET /api/orders/ HTTP/1.1" 403 5071
+INFO 2025-11-03 13:45:31,284 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+ERROR 2025-11-03 13:45:31,285 io_services_utils Socket failed to connect: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34964)>; error=111 (Connection refused)
+ERROR 2025-11-03 13:45:31,285 connection_workflow TCP Connection attempt failed: ConnectionRefusedError(111, 'Connection refused'); dest=(<AddressFamily.AF_INET: 2>, <SocketKind.SOCK_STREAM: 1>, 6, '', ('127.0.0.1', 5672))
+ERROR 2025-11-03 13:45:31,285 connection_workflow AMQPConnector - reporting failure: AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused')
+ERROR 2025-11-03 13:45:31,285 connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused'); first exception - None.
+ERROR 2025-11-03 13:45:31,286 connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused'); first exception - None
+ERROR 2025-11-03 13:45:31,286 blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused'); first exception - None
+ERROR 2025-11-03 13:45:31,286 blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.AMQPConnectionError
+ERROR 2025-11-03 13:45:31,287 config Erreur de connexion RabbitMQ: 
+INFO 2025-11-03 13:45:31,288 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+ERROR 2025-11-03 13:45:31,289 io_services_utils Socket failed to connect: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34968)>; error=111 (Connection refused)
+ERROR 2025-11-03 13:45:31,289 connection_workflow TCP Connection attempt failed: ConnectionRefusedError(111, 'Connection refused'); dest=(<AddressFamily.AF_INET: 2>, <SocketKind.SOCK_STREAM: 1>, 6, '', ('127.0.0.1', 5672))
+ERROR 2025-11-03 13:45:31,289 connection_workflow AMQPConnector - reporting failure: AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused')
+ERROR 2025-11-03 13:45:31,289 connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused'); first exception - None.
+ERROR 2025-11-03 13:45:31,289 connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused'); first exception - None
+ERROR 2025-11-03 13:45:31,289 blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused'); first exception - None
+ERROR 2025-11-03 13:45:31,289 blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.AMQPConnectionError
+ERROR 2025-11-03 13:45:31,289 config Erreur de connexion RabbitMQ: 
+INFO 2025-11-03 13:45:31,290 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+ERROR 2025-11-03 13:45:31,291 io_services_utils Socket failed to connect: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34970)>; error=111 (Connection refused)
+ERROR 2025-11-03 13:45:31,291 connection_workflow TCP Connection attempt failed: ConnectionRefusedError(111, 'Connection refused'); dest=(<AddressFamily.AF_INET: 2>, <SocketKind.SOCK_STREAM: 1>, 6, '', ('127.0.0.1', 5672))
+ERROR 2025-11-03 13:45:31,291 connection_workflow AMQPConnector - reporting failure: AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused')
+ERROR 2025-11-03 13:45:31,291 connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused'); first exception - None.
+ERROR 2025-11-03 13:45:31,291 connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused'); first exception - None
+ERROR 2025-11-03 13:45:31,291 blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorSocketConnectError: ConnectionRefusedError(111, 'Connection refused'); first exception - None
+ERROR 2025-11-03 13:45:31,291 blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.AMQPConnectionError
+ERROR 2025-11-03 13:45:31,292 tasks Error publishing event test.event: 
+INFO 2025-11-03 13:47:23,547 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+INFO 2025-11-03 13:47:23,547 io_services_utils Socket connected: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34972), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,548 connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f62b8198460>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f62b8198460> params=<ConnectionParameters host=localhost port=5672 virtual_host=/ ssl=False>>).
+INFO 2025-11-03 13:47:23,550 io_services_utils Aborting transport connection: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34972), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,550 io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34972), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,550 io_services_utils Deactivating transport: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34972), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,550 connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=None; pending-error=ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+ERROR 2025-11-03 13:47:23,551 connection Connection closed while authenticating indicating a probable authentication error
+INFO 2025-11-03 13:47:23,551 connection Connection setup terminated due to ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:47:23,551 connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:47:23,551 connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None.
+ERROR 2025-11-03 13:47:23,551 connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+INFO 2025-11-03 13:47:23,552 io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34972), raddr=('127.0.0.1', 5672)>
+ERROR 2025-11-03 13:47:23,552 blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+ERROR 2025-11-03 13:47:23,552 blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.ProbableAuthenticationError: ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+ERROR 2025-11-03 13:47:23,553 config Erreur de connexion RabbitMQ: ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+INFO 2025-11-03 13:47:23,554 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+INFO 2025-11-03 13:47:23,554 io_services_utils Socket connected: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34974), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,555 connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f62b81995a0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f62b81995a0> params=<ConnectionParameters host=localhost port=5672 virtual_host=/ ssl=False>>).
+INFO 2025-11-03 13:47:23,558 io_services_utils Aborting transport connection: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34974), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,558 io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34974), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,558 io_services_utils Deactivating transport: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34974), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,558 connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=None; pending-error=ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+ERROR 2025-11-03 13:47:23,558 connection Connection closed while authenticating indicating a probable authentication error
+INFO 2025-11-03 13:47:23,559 connection Connection setup terminated due to ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:47:23,559 connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:47:23,559 connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None.
+ERROR 2025-11-03 13:47:23,559 connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+INFO 2025-11-03 13:47:23,559 io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34974), raddr=('127.0.0.1', 5672)>
+ERROR 2025-11-03 13:47:23,559 blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+ERROR 2025-11-03 13:47:23,560 blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.ProbableAuthenticationError: ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+ERROR 2025-11-03 13:47:23,560 config Erreur de connexion RabbitMQ: ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+INFO 2025-11-03 13:47:23,561 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+INFO 2025-11-03 13:47:23,561 io_services_utils Socket connected: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34976), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,562 connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f62b8199e10>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f62b8199e10> params=<ConnectionParameters host=localhost port=5672 virtual_host=/ ssl=False>>).
+INFO 2025-11-03 13:47:23,567 io_services_utils Aborting transport connection: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34976), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,567 io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34976), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,568 io_services_utils Deactivating transport: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34976), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:47:23,568 connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=None; pending-error=ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+ERROR 2025-11-03 13:47:23,568 connection Connection closed while authenticating indicating a probable authentication error
+INFO 2025-11-03 13:47:23,568 connection Connection setup terminated due to ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:47:23,568 connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:47:23,568 connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None.
+ERROR 2025-11-03 13:47:23,568 connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+INFO 2025-11-03 13:47:23,569 io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34976), raddr=('127.0.0.1', 5672)>
+ERROR 2025-11-03 13:47:23,569 blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+ERROR 2025-11-03 13:47:23,569 blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.ProbableAuthenticationError: ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+ERROR 2025-11-03 13:47:23,569 tasks Error publishing event test.event: ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+INFO 2025-11-03 13:50:16,996 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+INFO 2025-11-03 13:50:16,997 io_services_utils Socket connected: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34978), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:50:16,997 connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fc9c714f190>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fc9c714f190> params=<ConnectionParameters host=localhost port=5672 virtual_host=/ ssl=False>>).
+INFO 2025-11-03 13:50:16,999 io_services_utils Aborting transport connection: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34978), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:50:16,999 io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34978), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:50:17,000 io_services_utils Deactivating transport: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34978), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:50:17,000 connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=None; pending-error=ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+ERROR 2025-11-03 13:50:17,000 connection Connection closed while authenticating indicating a probable authentication error
+INFO 2025-11-03 13:50:17,000 connection Connection setup terminated due to ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:50:17,000 connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:50:17,001 connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None.
+ERROR 2025-11-03 13:50:17,001 connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+INFO 2025-11-03 13:50:17,001 io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34978), raddr=('127.0.0.1', 5672)>
+ERROR 2025-11-03 13:50:17,001 blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+ERROR 2025-11-03 13:50:17,001 blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.ProbableAuthenticationError: ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+INFO 2025-11-03 13:50:43,898 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+INFO 2025-11-03 13:50:43,898 io_services_utils Socket connected: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34980), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:50:43,899 connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f998197f190>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7f998197f190> params=<ConnectionParameters host=localhost port=5672 virtual_host=/ ssl=False>>).
+INFO 2025-11-03 13:50:43,901 io_services_utils Aborting transport connection: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34980), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:50:43,901 io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34980), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:50:43,902 io_services_utils Deactivating transport: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34980), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:50:43,902 connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=None; pending-error=ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+ERROR 2025-11-03 13:50:43,902 connection Connection closed while authenticating indicating a probable authentication error
+INFO 2025-11-03 13:50:43,902 connection Connection setup terminated due to ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:50:43,902 connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:50:43,902 connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None.
+ERROR 2025-11-03 13:50:43,902 connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+INFO 2025-11-03 13:50:43,903 io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34980), raddr=('127.0.0.1', 5672)>
+ERROR 2025-11-03 13:50:43,903 blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+ERROR 2025-11-03 13:50:43,903 blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.ProbableAuthenticationError: ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+INFO 2025-11-03 13:52:26,945 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+INFO 2025-11-03 13:52:26,945 io_services_utils Socket connected: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34982), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:52:26,946 connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fa4d85531f0>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fa4d85531f0> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>).
+INFO 2025-11-03 13:52:26,948 io_services_utils Aborting transport connection: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34982), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:52:26,948 io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34982), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:52:26,948 io_services_utils Deactivating transport: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34982), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:52:26,948 connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=None; pending-error=ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+ERROR 2025-11-03 13:52:26,949 connection Connection closed while authenticating indicating a probable authentication error
+INFO 2025-11-03 13:52:26,949 connection Connection setup terminated due to ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:52:26,949 connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:52:26,949 connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None.
+ERROR 2025-11-03 13:52:26,949 connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+INFO 2025-11-03 13:52:26,949 io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34982), raddr=('127.0.0.1', 5672)>
+ERROR 2025-11-03 13:52:26,950 blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+ERROR 2025-11-03 13:52:26,950 blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.ProbableAuthenticationError: ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+INFO 2025-11-03 13:52:50,719 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+INFO 2025-11-03 13:52:50,719 io_services_utils Socket connected: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34984), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:52:50,720 connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fc1e2f7f190>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fc1e2f7f190> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>).
+INFO 2025-11-03 13:52:50,722 io_services_utils Aborting transport connection: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34984), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:52:50,722 io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34984), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:52:50,723 io_services_utils Deactivating transport: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34984), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:52:50,723 connection AMQP stack terminated, failed to connect, or aborted: opened=False, error-arg=None; pending-error=ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+ERROR 2025-11-03 13:52:50,723 connection Connection closed while authenticating indicating a probable authentication error
+INFO 2025-11-03 13:52:50,723 connection Connection setup terminated due to ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:52:50,724 connection_workflow AMQPConnector - reporting failure: AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",)
+ERROR 2025-11-03 13:52:50,724 connection_workflow AMQP connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None.
+ERROR 2025-11-03 13:52:50,724 connection_workflow AMQPConnectionWorkflow - reporting failure: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+INFO 2025-11-03 13:52:50,724 io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34984), raddr=('127.0.0.1', 5672)>
+ERROR 2025-11-03 13:52:50,724 blocking_connection Connection workflow failed: AMQPConnectionWorkflowFailed: 1 exceptions in all; last exception - AMQPConnectorAMQPHandshakeError: ProbableAuthenticationError: Client was disconnected at a connection stage indicating a probable authentication error: ("ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'",); first exception - None
+ERROR 2025-11-03 13:52:50,725 blocking_connection Error in _create_connection().
+Traceback (most recent call last):
+  File "/home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/venv/lib/python3.10/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.ProbableAuthenticationError: ConnectionClosedByBroker: (403) 'ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile.'
+INFO 2025-11-03 13:53:05,444 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+INFO 2025-11-03 13:53:05,444 io_services_utils Socket connected: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34986), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:53:05,445 connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fa68d967880>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fa68d967880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>).
+INFO 2025-11-03 13:53:05,448 connection_workflow AMQPConnector - reporting success: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fa68d967880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>
+INFO 2025-11-03 13:53:05,448 connection_workflow AMQPConnectionWorkflow - reporting success: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fa68d967880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>
+INFO 2025-11-03 13:53:05,448 blocking_connection Connection workflow succeeded: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fa68d967880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>
+INFO 2025-11-03 13:53:05,448 blocking_connection Created channel=1
+INFO 2025-11-03 13:53:05,476 blocking_connection Closing connection (200): Normal shutdown
+INFO 2025-11-03 13:53:05,476 channel Closing channel (200): 'Normal shutdown' on <Channel number=1 OPEN conn=<SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fa68d967880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>>
+INFO 2025-11-03 13:53:05,477 channel Received <Channel.CloseOk> on <Channel number=1 CLOSING conn=<SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fa68d967880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>>
+INFO 2025-11-03 13:53:05,477 connection Closing connection (200): 'Normal shutdown'
+INFO 2025-11-03 13:53:05,478 io_services_utils Aborting transport connection: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34986), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:53:05,478 io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34986), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:53:05,478 io_services_utils Deactivating transport: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34986), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:53:05,478 connection AMQP stack terminated, failed to connect, or aborted: opened=True, error-arg=None; pending-error=ConnectionClosedByClient: (200) 'Normal shutdown'
+INFO 2025-11-03 13:53:05,478 connection Stack terminated due to ConnectionClosedByClient: (200) 'Normal shutdown'
+INFO 2025-11-03 13:53:05,478 io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34986), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:53:05,478 blocking_connection User-initiated close: result=BlockingConnection__OnClosedArgs(connection=<SelectConnection CLOSED transport=None params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>, error=ConnectionClosedByClient: (200) 'Normal shutdown')
+INFO 2025-11-03 13:53:23,332 connection_workflow Pika version 1.3.2 connecting to ('127.0.0.1', 5672)
+INFO 2025-11-03 13:53:23,333 io_services_utils Socket connected: <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34988), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:53:23,334 connection_workflow Streaming transport linked up: (<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fb0a0153880>, _StreamingProtocolShim: <SelectConnection PROTOCOL transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fb0a0153880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>).
+INFO 2025-11-03 13:53:23,337 connection_workflow AMQPConnector - reporting success: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fb0a0153880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>
+INFO 2025-11-03 13:53:23,337 connection_workflow AMQPConnectionWorkflow - reporting success: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fb0a0153880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>
+INFO 2025-11-03 13:53:23,338 blocking_connection Connection workflow succeeded: <SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fb0a0153880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>
+INFO 2025-11-03 13:53:23,338 blocking_connection Created channel=1
+INFO 2025-11-03 13:53:23,344 blocking_connection Closing connection (200): Normal shutdown
+INFO 2025-11-03 13:53:23,345 channel Closing channel (200): 'Normal shutdown' on <Channel number=1 OPEN conn=<SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fb0a0153880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>>
+INFO 2025-11-03 13:53:23,345 channel Received <Channel.CloseOk> on <Channel number=1 CLOSING conn=<SelectConnection OPEN transport=<pika.adapters.utils.io_services_utils._AsyncPlaintextTransport object at 0x7fb0a0153880> params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>>
+INFO 2025-11-03 13:53:23,345 connection Closing connection (200): 'Normal shutdown'
+INFO 2025-11-03 13:53:23,346 io_services_utils Aborting transport connection: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34988), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:53:23,346 io_services_utils _AsyncTransportBase._initate_abort(): Initiating abrupt asynchronous transport shutdown: state=1; error=None; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34988), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:53:23,346 io_services_utils Deactivating transport: state=1; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34988), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:53:23,347 connection AMQP stack terminated, failed to connect, or aborted: opened=True, error-arg=None; pending-error=ConnectionClosedByClient: (200) 'Normal shutdown'
+INFO 2025-11-03 13:53:23,347 connection Stack terminated due to ConnectionClosedByClient: (200) 'Normal shutdown'
+INFO 2025-11-03 13:53:23,347 io_services_utils Closing transport socket and unlinking: state=3; <socket.socket fd=7, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=6, laddr=('127.0.0.1', 34988), raddr=('127.0.0.1', 5672)>
+INFO 2025-11-03 13:53:23,347 blocking_connection User-initiated close: result=BlockingConnection__OnClosedArgs(connection=<SelectConnection CLOSED transport=None params=<ConnectionParameters host=localhost port=5672 virtual_host=terra_vhost ssl=False>>, error=ConnectionClosedByClient: (200) 'Normal shutdown')
+INFO 2025-11-03 14:09:00,830 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 14:09:07,155 basehttp "GET / HTTP/1.1" 200 431
+INFO 2025-11-03 14:09:07,886 basehttp "GET / HTTP/1.1" 200 431
+INFO 2025-11-03 14:09:17,458 basehttp "GET /api/docs/ HTTP/1.1" 200 4677
+INFO 2025-11-03 14:09:17,762 basehttp "GET /api/schema/ HTTP/1.1" 200 45973

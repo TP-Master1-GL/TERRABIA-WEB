@@ -1,0 +1,13 @@
+{
+  "event_type": "user.updated",
+  "description": "Un utilisateur a modifié son profil",
+  "exchange": "user.events",
+  "routing_key": "user.updated",
+  "queue": "queue.user.updated",
+  "payload": {
+    "user_id": "int",
+    "email": "string",
+    "username": "string",
+    "role": "string"
+  }
+}

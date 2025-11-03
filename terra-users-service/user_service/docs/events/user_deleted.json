@@ -1,0 +1,10 @@
+{
+  "event_type": "user.deleted",
+  "description": "Un utilisateur a été supprimé du système",
+  "exchange": "user.events",
+  "routing_key": "user.deleted",
+  "queue": "queue.user.deleted",
+  "payload": {
+    "user_id": "int"
+  }
+}

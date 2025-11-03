@@ -1,0 +1,39 @@
+{
+  "exchange": {
+    "name": "user.events",
+    "type": "topic",
+    "durable": true
+  },
+  "events": [
+    {
+      "name": "user.created",
+      "routing_key": "user.created",
+      "queue": "queue.user.created",
+      "description": "Un nouvel utilisateur vient d'être créé"
+    },
+    {
+      "name": "user.verified",
+      "routing_key": "user.verified",
+      "queue": "queue.user.verified",
+      "description": "L'utilisateur a vérifié son email"
+    },
+    {
+      "name": "user.updated",
+      "routing_key": "user.updated",
+      "queue": "queue.user.updated",
+      "description": "Un utilisateur a mis à jour son profil"
+    },
+    {
+      "name": "user.deleted",
+      "routing_key": "user.deleted",
+      "queue": "queue.user.deleted",
+      "description": "Un utilisateur a été supprimé du système"
+    },
+    {
+      "name": "user.password_reset_requested",
+      "routing_key": "user.password_reset_requested",
+      "queue": "queue.user.password_reset_requested",
+      "description": "Un utilisateur a demandé une réinitialisation de mot de passe"
+    }
+  ]
+}

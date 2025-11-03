@@ -13,9 +13,39 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import permissions
+
+# Configuration Swagger/ReDoc
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Terra Auth Service API",
+        default_version='v1',
+        description="""
+        **Service d'authenticatiion centralisé pour Terrabia**  
+        - Gestion JWT (Access + Refresh)  
+        - Synchronisation asynchrone via RabbitMQ  
+        - Enregistrement Eureka  
+        - Configuration dynamique via Config Server  
+        """,
+        terms_of_service="https://terrabia.com/terms/",
+        contact=openapi.Contact(email="dev@terrabia.com"),
+        license=openapi.License(name="MIT"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('auth_app.urls')),
+
+    # Documentation
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('swagger.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
 ]

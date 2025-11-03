@@ -323,3 +323,8 @@ INFO 2025-11-03 14:09:07,155 basehttp "GET / HTTP/1.1" 200 431
 INFO 2025-11-03 14:09:07,886 basehttp "GET / HTTP/1.1" 200 431
 INFO 2025-11-03 14:09:17,458 basehttp "GET /api/docs/ HTTP/1.1" 200 4677
 INFO 2025-11-03 14:09:17,762 basehttp "GET /api/schema/ HTTP/1.1" 200 45973
+INFO 2025-11-03 14:36:51,099 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 14:38:49,162 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 14:38:49,895 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 14:38:56,574 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 14:38:57,317 autoreload Watching for file changes with StatReloader

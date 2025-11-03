@@ -123,11 +123,11 @@ SERVICE_CONFIG = {
 
 # Microservices URLs
 MICROSERVICES = {
-    'user_service': env('USER_SERVICE_URL', default='http://localhost:8001'),
-    'catalog_service': env('CATALOG_SERVICE_URL', default='http://localhost:8002'),
-    'logistics_service': env('LOGISTICS_SERVICE_URL', default='http://localhost:8003'),
-    'notification_service': env('NOTIFICATION_SERVICE_URL', default='http://localhost:8004'),
-    'config_service': env('CONFIG_SERVICE_URL', default='http://localhost:8888'),
+    # 'user_service': env('USER_SERVICE_URL', default='http://localhost:8001'),
+    # 'catalog_service': env('CATALOG_SERVICE_URL', default='http://localhost:8002'),
+    # 'logistics_service': env('LOGISTICS_SERVICE_URL', default='http://localhost:8003'),
+    # 'notification_service': env('NOTIFICATION_SERVICE_URL', default='http://localhost:8004'),
+    'config_service': env('CONFIG_SERVICE_URL', default='http://localhost:8080'),
     'eureka_service': env('EUREKA_SERVICE_URL', default='http://localhost:8761/eureka'),
 }
 

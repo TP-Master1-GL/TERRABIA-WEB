@@ -15,7 +15,7 @@ def test_config_service():
         if response.status_code == 200:
             config_data = response.json()
             print("📋 Configuration reçue:")
-            print(json.dumps(config_data, indent=2))
+            print(json.dumps(config_data, indent=4))
             
             # Vérifiez les champs importants
             print(f"\n🔍 Champs importants:")

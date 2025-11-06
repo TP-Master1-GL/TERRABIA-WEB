@@ -29,7 +29,6 @@ def get_config_from_config_service():
         
         config_data = response.json()
         print("✅ Configuration récupérée avec succès depuis le service de configuration")
-        print(f"📋 Données reçues: {json.dumps(config_data, indent=2)}")
         return config_data
         
     except requests.exceptions.RequestException as e:
@@ -43,67 +42,58 @@ def setup_configuration():
     """
     config_data = get_config_from_config_service()
     
-    # Debug - Toujours afficher ce qu'on reçoit
+    # DEBUG IMPORTANT - Afficher la structure complète
     if config_data:
-        print(f"🎯 Configuration reçue: {list(config_data.keys())}")
+        print(f"🎯 Configuration reçue - Clés: {list(config_data.keys())}")
+        print(f"🔍 DEBUG - Contenu 'server': {config_data.get('server')}")
+        print(f"🔍 DEBUG - Contenu 'database': {config_data.get('database')}")
+    else:
+        print("🔍 DEBUG - Aucune donnée de configuration reçue")
     
-    # SECRET_KEY - avec fallback robuste
+    # SECRET_KEY
     secret_key = None
     if config_data:
-        # Essayer plusieurs chemins possibles pour la secret key
-        secret_key = (
-            config_data.get('jwt', {}).get('service', {}).get('secret') or
-            config_data.get('jwt', {}).get('service-secret') or
-            config_data.get('secret_key') or
-            config_data.get('security', {}).get('secret-key')
-        )
+        secret_key = config_data.get('secret_key')
+        print(f"🔍 DEBUG - Secret key from config: {secret_key is not None}")
     
     # DEBUG
     debug = env.bool('DEBUG', default=True)
     
-    # PORT - Récupération robuste
+    # PORT - CORRECTION CRITIQUE ICI
     server_port = None
     if config_data:
+        # Essayer plusieurs chemins pour trouver le port
         server_port = (
-            config_data.get('server', {}).get('port') or
-            config_data.get('server.port') or
-            config_data.get('port')
+            config_data.get('server', {}).get('port') or  # {"server": {"port": 8086}}
+            config_data.get('port')                       # {"port": 8086}
         )
+        print(f"🔍 DEBUG - Port from config: {server_port}")
     
-    # Database configuration robuste
+    # Si le port n'est pas trouvé dans la config, utiliser .env ou défaut
+    if not server_port:
+        server_port = env.int('SERVICE_PORT', default=8000)
+        print(f"🔍 DEBUG - Using fallback port: {server_port}")
+    
+    # Database configuration
     db_config = {}
     if config_data:
-        # Essayer différents chemins pour la config DB
-        db_config = (
-            config_data.get('spring', {}).get('datasource') or
-            config_data.get('database') or
-            config_data.get('db') or
-            {}
-        )
+        db_config = config_data.get('database', {})
     
-    # RabbitMQ configuration robuste
+    # RabbitMQ configuration
     rabbitmq_config = {}
     if config_data:
-        rabbitmq_config = (
-            config_data.get('spring', {}).get('rabbitmq') or
-            config_data.get('rabbitmq') or
-            {}
-        )
+        rabbitmq_config = config_data.get('rabbitmq', {})
     
-    # Redis configuration robuste
+    # Redis configuration
     redis_config = {}
     if config_data:
-        redis_config = (
-            config_data.get('spring', {}).get('redis') or
-            config_data.get('redis') or
-            {}
-        )
+        redis_config = config_data.get('redis', {})
     
     return {
         'secret_key': secret_key,
         'debug': debug,
         'server_port': server_port,
-        'db_config': db_config or {},  # S'assurer que c'est toujours un dict
+        'db_config': db_config or {},
         'rabbitmq_config': rabbitmq_config or {},
         'redis_config': redis_config or {},
         'config_data': config_data
@@ -111,6 +101,9 @@ def setup_configuration():
 
 # Chargement de la configuration
 app_config = setup_configuration()
+
+# DEBUG FINAL - Afficher le port qui sera utilisé
+print(f"🎯 PORT FINAL POUR LE SERVICE: {app_config['server_port']}")
 
 BUSINESS_CONFIG = {}
 
@@ -145,9 +138,6 @@ else:
                 'completed': 'COMPLETED',
                 'cancelled': 'CANCELLED'
             },
-            'autoconfirm_enabled': False,
-            'expiration_hours': 24,
-            'max_items_per_order': 20,
             'number_prefix': 'TRB'
         },
         'TRANSACTION_CONFIG': {
@@ -175,7 +165,6 @@ else:
         },
         'PAYMENT_CONFIG': {
             'simulation_enabled': True,
-            'simulation_success_rate': 0.95,
             'platform_commission_rate': 5.0
         },
         'DELIVERY_CONFIG': {
@@ -191,7 +180,7 @@ sys.modules[__name__].__dict__['BUSINESS_CONFIG'] = BUSINESS_CONFIG
 # Configuration Django de base avec fallbacks robustes
 SECRET_KEY = app_config['secret_key'] or env('SECRET_KEY', default='terra-order-service-secret-key-2024')
 DEBUG = app_config['debug']
-SERVICE_PORT = app_config['server_port'] or env.int('SERVICE_PORT', default=8000)
+SERVICE_PORT = app_config['server_port']  # ⬅️ UTILISATION DIRECTE DU PORT DE LA CONFIG
 ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1', '0.0.0.0']
 
 print(f"🔧 Configuration finale:")
@@ -305,13 +294,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# REST Framework
+# REST Framework - TEMPORAIREMENT SANS AUTH POUR TESTS
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'order_app.authentication.MicroserviceAuthentication',
-    ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'order_app.authentication.MicroserviceAuthentication',
+    # ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',  # ⬅️ POUR TESTS
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
@@ -326,17 +316,6 @@ CORS_ALLOWED_ORIGINS = [
     f"http://localhost:{SERVICE_PORT}",
     f"http://127.0.0.1:{SERVICE_PORT}",
 ]
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
 
 # Service Configuration
 SERVICE_CONFIG = {
@@ -348,16 +327,15 @@ SERVICE_CONFIG = {
 # Microservices URLs
 MICROSERVICES = {
     'config_service': CONFIG_SERVICE_URL,
-    'eureka_service': env('EUREKA_SERVICE_URL', default='http://localhost:8761/eureka'),
+    'eureka_service': env('EUREKA_SERVICE_URL', default='http://localhost:8761'),
 }
 
-# RabbitMQ Configuration avec fallbacks
+# RabbitMQ Configuration
 rabbitmq_config = app_config['rabbitmq_config']
 
 RABBITMQ = {
     'host': (
         rabbitmq_config.get('host') or 
-        rabbitmq_config.get('hostname') or
         env('RABBITMQ_HOST', default='localhost')
     ),
     'port': (
@@ -366,7 +344,6 @@ RABBITMQ = {
     ),
     'username': (
         rabbitmq_config.get('username') or 
-        rabbitmq_config.get('user') or
         env('RABBITMQ_USERNAME', default='guest')
     ),
     'password': (
@@ -375,7 +352,6 @@ RABBITMQ = {
     ),
     'vhost': (
         rabbitmq_config.get('virtual-host') or 
-        rabbitmq_config.get('vhost') or
         env('RABBITMQ_VHOST', default='/')
     ),
 }
@@ -460,89 +436,108 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API for managing orders and transactions in Terrabia platform',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
-            'description': 'JWT Token format: Bearer <token>'
-        }
-    },
 }
 
-# Eureka Registration
+# Eureka Registration - VERSION AMÉLIORÉE
 def register_with_eureka():
     """
-    Enregistre le service auprès d'Eureka - URL CORRIGÉE
+    Enregistre le service auprès d'Eureka avec retry et fallback
     """
     eureka_url = env('EUREKA_SERVICE_URL', default='http://localhost:8761')
     
-    try:
-        eureka_payload = {
-            "instance": {
-                "instanceId": f"{SERVICE_NAME}:{SERVICE_PORT}",
-                "app": SERVICE_NAME.upper().replace('-', '_'),
-                "hostName": "localhost",
-                "ipAddr": "127.0.0.1",
-                "status": "UP",
-                "port": {
-                    "$": int(SERVICE_PORT),
-                    "@enabled": "true",
-                },
-                "securePort": {
-                    "$": 8443,
-                    "@enabled": "false",
-                },
-                "healthCheckUrl": f"http://localhost:{SERVICE_PORT}/health/",
-                "statusPageUrl": f"http://localhost:{SERVICE_PORT}/admin/",
-                "homePageUrl": f"http://localhost:{SERVICE_PORT}/",
-                "vipAddress": SERVICE_NAME,
-                "secureVipAddress": SERVICE_NAME,
-                "dataCenterInfo": {
-                    "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
-                    "name": "MyOwn"
-                }
+    eureka_payload = {
+        "instance": {
+            "instanceId": f"{SERVICE_NAME}:{SERVICE_PORT}",
+            "app": SERVICE_NAME.upper().replace('-', '_'),
+            "hostName": "localhost",
+            "ipAddr": "127.0.0.1",
+            "status": "UP",
+            "port": {
+                "$": int(SERVICE_PORT),
+                "@enabled": "true",
+            },
+            "securePort": {
+                "$": 8443,
+                "@enabled": "false",
+            },
+            "healthCheckUrl": f"http://localhost:{SERVICE_PORT}/health/",
+            "statusPageUrl": f"http://localhost:{SERVICE_PORT}/admin/",
+            "homePageUrl": f"http://localhost:{SERVICE_PORT}/",
+            "vipAddress": SERVICE_NAME,
+            "secureVipAddress": SERVICE_NAME,
+            "dataCenterInfo": {
+                "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                "name": "MyOwn"
             }
         }
-        
-        print(f"🔧 Tentative d'enregistrement Eureka sur: {eureka_url}")
-        
-        # URL CORRIGÉE - sans le /eureka en double
-        # Essayer d'abord l'URL standard
+    }
+    
+    print(f"🔧 Tentative d'enregistrement Eureka:")
+    print(f"   Service: {SERVICE_NAME}")
+    print(f"   Port: {SERVICE_PORT}")
+    print(f"   URL de base: {eureka_url}")
+    
+    # Essayer différentes URLs Eureka
+    eureka_urls_to_try = [
+        f"{eureka_url}/eureka/apps/{SERVICE_NAME.upper().replace('-', '_')}",
+        f"{eureka_url}/apps/{SERVICE_NAME.upper().replace('-', '_')}",
+    ]
+    
+    for url in eureka_urls_to_try:
         try:
+            print(f"   Essai sur: {url}")
             response = requests.post(
-                f"{eureka_url}/eureka/apps/{SERVICE_NAME.upper().replace('-', '_')}",
+                url,
                 json=eureka_payload,
                 headers={'Content-Type': 'application/json'},
-                timeout=5
+                timeout=10
             )
             
             if response.status_code in [200, 204]:
-                print("✅ Service enregistré auprès d'Eureka avec succès")
-                return
+                print("✅ Service enregistré auprès d'Eureka avec succès!")
+                return True
             else:
-                print(f"⚠️ Eureka standard a retourné: {response.status_code}")
-        except:
-            pass
-        
-        # Si l'URL standard échoue, essayer sans le chemin /eureka
-        try:
-            response = requests.post(
-                f"{eureka_url}/apps/{SERVICE_NAME.upper().replace('-', '_')}",
-                json=eureka_payload,
-                headers={'Content-Type': 'application/json'},
-                timeout=5
-            )
-            
-            if response.status_code in [200, 204]:
-                print("✅ Service enregistré auprès d'Eureka (URL alternative)")
-            else:
-                print(f"⚠️ Eureka alternative a retourné: {response.status_code}")
+                print(f"⚠️ Eureka a retourné: {response.status_code}")
                 if response.text:
-                    print(f"⚠️ Réponse: {response.text}")
+                    print(f"   Réponse: {response.text}")
                     
+        except requests.exceptions.ConnectionError:
+            print(f"❌ Impossible de se connecter à Eureka sur: {url}")
         except Exception as e:
-            print(f"⚠️ Erreur avec l'URL alternative Eureka: {e}")
-            
-    except Exception as e:
-        print(f"⚠️ Erreur lors de l'enregistrement Eureka: {e}")
+            print(f"❌ Erreur avec Eureka: {e}")
+    
+    print("❌ Échec de l'enregistrement Eureka après tous les essais")
+    return False
+
+# Enregistrement Eureka au démarrage
+if not 'test' in sys.argv and not 'migrate' in sys.argv and not 'collectstatic' in sys.argv:
+    import threading
+    import time
+    
+    def delayed_eureka_registration():
+        """Attendre que Django soit complètement démarré avant de s'enregistrer sur Eureka"""
+        time.sleep(3)
+        register_with_eureka()
+    
+    eureka_thread = threading.Thread(target=delayed_eureka_registration)
+    eureka_thread.daemon = True
+    eureka_thread.start()
+
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+    
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+
+# Affichage final
+print(f"\n🎯 Service {SERVICE_NAME} configuré:")
+print(f"   Port: {SERVICE_PORT}")
+print(f"   Database: {DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}")
+print(f"   RabbitMQ: {RABBITMQ['host']}:{RABBITMQ['port']}")
+print(f"   Config Service: {CONFIG_SERVICE_URL}")
+print("✅ Configuration Django chargée avec succès!\n")

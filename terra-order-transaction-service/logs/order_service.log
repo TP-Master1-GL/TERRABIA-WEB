@@ -363,3 +363,71 @@ INFO 2025-11-03 15:11:22,035 autoreload /home/john-nguembu/TERRABIA-WEB/terra-or
 INFO 2025-11-03 15:11:26,730 autoreload Watching for file changes with StatReloader
 INFO 2025-11-03 15:11:35,504 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/order_app/models.py changed, reloading.
 INFO 2025-11-03 15:11:39,567 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 15:16:18,532 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 15:17:20,640 basehttp "GET / HTTP/1.1" 200 431
+INFO 2025-11-03 15:17:21,395 basehttp "GET / HTTP/1.1" 200 431
+INFO 2025-11-03 15:17:39,909 basehttp "GET /api/docs/ HTTP/1.1" 200 4677
+INFO 2025-11-03 15:17:40,287 basehttp "GET /api/schema/ HTTP/1.1" 200 46322
+INFO 2025-11-03 15:26:08,286 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 15:28:09,300 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-03 15:28:20,360 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 17:11:55,514 autoreload Watching for file changes with StatReloader
+INFO 2025-11-03 17:12:42,540 basehttp "GET /api/docs/ HTTP/1.1" 200 4677
+INFO 2025-11-03 17:12:42,730 basehttp "GET /api/schema/ HTTP/1.1" 200 46322
+INFO 2025-11-03 17:13:06,783 basehttp "GET /api/redoc/ HTTP/1.1" 200 760
+INFO 2025-11-03 17:13:07,040 basehttp "GET /api/schema/ HTTP/1.1" 200 23182
+INFO 2025-11-06 10:52:15,016 autoreload Watching for file changes with StatReloader
+WARNING 2025-11-06 10:52:27,976 log Forbidden: /api/
+WARNING 2025-11-06 10:52:27,976 basehttp "GET /api/ HTTP/1.1" 403 4921
+INFO 2025-11-06 10:52:28,009 basehttp "GET /static/rest_framework/css/bootstrap.min.css HTTP/1.1" 304 0
+INFO 2025-11-06 10:52:28,020 basehttp "GET /static/rest_framework/css/bootstrap-tweaks.css HTTP/1.1" 304 0
+INFO 2025-11-06 10:52:28,023 basehttp "GET /static/rest_framework/css/prettify.css HTTP/1.1" 304 0
+INFO 2025-11-06 10:52:28,030 basehttp "GET /static/rest_framework/js/prettify-min.js HTTP/1.1" 304 0
+INFO 2025-11-06 10:52:28,030 basehttp "GET /static/rest_framework/js/jquery-3.5.1.min.js HTTP/1.1" 304 0
+INFO 2025-11-06 10:52:28,030 basehttp "GET /static/rest_framework/js/csrf.js HTTP/1.1" 304 0
+INFO 2025-11-06 10:52:28,030 basehttp "GET /static/rest_framework/css/default.css HTTP/1.1" 304 0
+INFO 2025-11-06 10:52:28,033 basehttp "GET /static/rest_framework/js/ajax-form.js HTTP/1.1" 304 0
+INFO 2025-11-06 10:52:28,036 basehttp "GET /static/rest_framework/js/bootstrap.min.js HTTP/1.1" 304 0
+INFO 2025-11-06 10:52:28,037 basehttp "GET /static/rest_framework/js/default.js HTTP/1.1" 304 0
+INFO 2025-11-06 10:52:28,062 basehttp "GET /static/rest_framework/img/grid.png HTTP/1.1" 304 0
+WARNING 2025-11-06 10:52:28,167 log Not Found: /favicon.ico
+WARNING 2025-11-06 10:52:28,167 basehttp "GET /favicon.ico HTTP/1.1" 404 3570
+INFO 2025-11-06 10:52:33,999 basehttp "GET /api/docs/ HTTP/1.1" 200 4677
+INFO 2025-11-06 10:52:34,339 basehttp "GET /api/schema/ HTTP/1.1" 200 46322
+WARNING 2025-11-06 10:57:05,690 log Forbidden: /health/
+WARNING 2025-11-06 10:57:05,691 basehttp "GET /health/ HTTP/1.1" 403 58
+INFO 2025-11-06 10:57:17,358 basehttp "GET /api/docs/ HTTP/1.1" 200 4677
+INFO 2025-11-06 10:57:17,751 basehttp "GET /api/schema/ HTTP/1.1" 200 46322
+INFO 2025-11-06 10:57:28,396 basehttp "GET /api/health/ HTTP/1.1" 200 85
+INFO 2025-11-06 10:57:44,130 basehttp "GET /api/docs/ HTTP/1.1" 200 4677
+WARNING 2025-11-06 10:58:00,865 log Not Found: /api/orders/ Content-Type: application/json  {   "buyer_id": "test-buyer-001",   "farmer_id": "test-farmer-001",    "delivery_address": "123 Rue du Commerce, Yaoundé",   "subtotal": "25000.00",   "delivery_fee": "1500.00",   "total_amount": "26500.00",   "items": [     {       "product_id": "prod-test-001",       "product_name": "Tomates Bio",       "quantity": "5.00",       "unit": "kg",       "unit_price": "5000.00"     }   ] }
+WARNING 2025-11-06 10:58:00,866 basehttp "POST /api/orders/%20Content-Type:%20application/json%20%20%7B%20%20%20%22buyer_id%22:%20%22test-buyer-001%22,%20%20%20%22farmer_id%22:%20%22test-farmer-001%22,%20%20%20%20%22delivery_address%22:%20%22123%20Rue%20du%20Commerce,%20Yaound%C3%A9%22,%20%20%20%22subtotal%22:%20%2225000.00%22,%20%20%20%22delivery_fee%22:%20%221500.00%22,%20%20%20%22total_amount%22:%20%2226500.00%22,%20%20%20%22items%22:%20[%20%20%20%20%20%7B%20%20%20%20%20%20%20%22product_id%22:%20%22prod-test-001%22,%20%20%20%20%20%20%20%22product_name%22:%20%22Tomates%20Bio%22,%20%20%20%20%20%20%20%22quantity%22:%20%225.00%22,%20%20%20%20%20%20%20%22unit%22:%20%22kg%22,%20%20%20%20%20%20%20%22unit_price%22:%20%225000.00%22%20%20%20%20%20%7D%20%20%20]%20%7D HTTP/1.1" 404 10937
+WARNING 2025-11-06 10:58:54,330 log Forbidden: /api/orders/
+WARNING 2025-11-06 10:58:54,330 basehttp "POST /api/orders/ HTTP/1.1" 403 58
+WARNING 2025-11-06 11:00:10,654 log Forbidden: /api/orders/
+WARNING 2025-11-06 11:00:10,655 basehttp "POST /api/orders/ HTTP/1.1" 403 58
+WARNING 2025-11-06 11:01:45,648 log Forbidden: /api/orders/
+WARNING 2025-11-06 11:01:45,649 basehttp "POST /api/orders/ HTTP/1.1" 403 58
+WARNING 2025-11-06 11:02:57,443 log Forbidden: /api/orders/
+WARNING 2025-11-06 11:02:57,444 basehttp "POST /api/orders/ HTTP/1.1" 403 58
+INFO 2025-11-06 11:03:55,240 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-06 11:03:56,018 autoreload Watching for file changes with StatReloader
+INFO 2025-11-06 11:03:58,242 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-06 11:03:58,868 autoreload Watching for file changes with StatReloader
+INFO 2025-11-06 11:04:01,087 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-06 11:04:01,703 autoreload Watching for file changes with StatReloader
+INFO 2025-11-06 11:04:15,383 autoreload Watching for file changes with StatReloader
+INFO 2025-11-06 11:04:53,740 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-06 11:04:54,367 autoreload Watching for file changes with StatReloader
+ERROR 2025-11-06 11:05:04,593 services Error creating order: 'user_service'
+WARNING 2025-11-06 11:05:04,594 log Bad Request: /api/orders/
+WARNING 2025-11-06 11:05:04,595 basehttp "POST /api/orders/ HTTP/1.1" 400 29
+INFO 2025-11-06 11:06:13,541 basehttp "GET /api/orders/ HTTP/1.1" 200 52
+INFO 2025-11-06 11:06:34,086 basehttp "GET /api/transactions/ HTTP/1.1" 200 52
+INFO 2025-11-06 11:06:59,693 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-06 11:07:00,338 autoreload Watching for file changes with StatReloader
+INFO 2025-11-06 11:07:02,602 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-06 11:07:03,339 autoreload Watching for file changes with StatReloader
+INFO 2025-11-06 11:10:11,416 autoreload Watching for file changes with StatReloader
+INFO 2025-11-06 11:17:06,389 autoreload Watching for file changes with StatReloader
+INFO 2025-11-06 11:25:01,832 autoreload Watching for file changes with StatReloader

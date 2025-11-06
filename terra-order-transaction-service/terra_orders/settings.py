@@ -473,9 +473,9 @@ SPECTACULAR_SETTINGS = {
 # Eureka Registration
 def register_with_eureka():
     """
-    Enregistre le service auprès d'Eureka
+    Enregistre le service auprès d'Eureka - URL CORRIGÉE
     """
-    eureka_url = env('EUREKA_SERVICE_URL', default='http://localhost:8761/eureka')
+    eureka_url = env('EUREKA_SERVICE_URL', default='http://localhost:8761')
     
     try:
         eureka_payload = {
@@ -506,59 +506,43 @@ def register_with_eureka():
         }
         
         print(f"🔧 Tentative d'enregistrement Eureka sur: {eureka_url}")
-        response = requests.post(
-            f"{eureka_url}/eureka/apps/{SERVICE_NAME.upper().replace('-', '_')}",
-            json=eureka_payload,
-            headers={'Content-Type': 'application/json'},
-            timeout=10
-        )
         
-        if response.status_code in [200, 204]:
-            print("✅ Service enregistré auprès d'Eureka avec succès")
-        else:
-            print(f"⚠️ Eureka a retourné le statut: {response.status_code}")
-            print(f"⚠️ Réponse Eureka: {response.text}")
+        # URL CORRIGÉE - sans le /eureka en double
+        # Essayer d'abord l'URL standard
+        try:
+            response = requests.post(
+                f"{eureka_url}/eureka/apps/{SERVICE_NAME.upper().replace('-', '_')}",
+                json=eureka_payload,
+                headers={'Content-Type': 'application/json'},
+                timeout=5
+            )
+            
+            if response.status_code in [200, 204]:
+                print("✅ Service enregistré auprès d'Eureka avec succès")
+                return
+            else:
+                print(f"⚠️ Eureka standard a retourné: {response.status_code}")
+        except:
+            pass
+        
+        # Si l'URL standard échoue, essayer sans le chemin /eureka
+        try:
+            response = requests.post(
+                f"{eureka_url}/apps/{SERVICE_NAME.upper().replace('-', '_')}",
+                json=eureka_payload,
+                headers={'Content-Type': 'application/json'},
+                timeout=5
+            )
+            
+            if response.status_code in [200, 204]:
+                print("✅ Service enregistré auprès d'Eureka (URL alternative)")
+            else:
+                print(f"⚠️ Eureka alternative a retourné: {response.status_code}")
+                if response.text:
+                    print(f"⚠️ Réponse: {response.text}")
+                    
+        except Exception as e:
+            print(f"⚠️ Erreur avec l'URL alternative Eureka: {e}")
             
     except Exception as e:
         print(f"⚠️ Erreur lors de l'enregistrement Eureka: {e}")
-
-# Enregistrement Eureka au démarrage
-if not 'test' in sys.argv and not 'migrate' in sys.argv and not 'collectstatic' in sys.argv:
-    import threading
-    import time
-    
-    def delayed_eureka_registration():
-        """Attendre que Django soit complètement démarré avant de s'enregistrer sur Eureka"""
-        time.sleep(3)
-        register_with_eureka()
-    
-    eureka_thread = threading.Thread(target=delayed_eureka_registration)
-    eureka_thread.daemon = True
-    eureka_thread.start()
-
-if 'test' in sys.argv:
-    # Utiliser SQLite en mémoire pour les tests
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:',
-        }
-    }
-    
-    # Désactiver l'authentification pour les tests
-    REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES'] = []
-    REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = []
-    
-    # Désactiver RabbitMQ pour les tests
-    CELERY_TASK_ALWAYS_EAGER = True
-    CELERY_TASK_EAGER_PROPAGATES = True
-
-# Affichage de la configuration chargée
-print(f"\n🎯 Configuration finale du service {SERVICE_NAME}:")
-print(f"   Port: {SERVICE_PORT}")
-print(f"   Debug: {DEBUG}")
-print(f"   Secret Key: {'*' * 10}{SECRET_KEY[-5:] if SECRET_KEY else 'None'}")
-print(f"   Database: {DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}")
-print(f"   RabbitMQ: {RABBITMQ['host']}:{RABBITMQ['port']}")
-print(f"   Config Service: {CONFIG_SERVICE_URL}")
-print("✅ Configuration Django chargée avec succès!\n")

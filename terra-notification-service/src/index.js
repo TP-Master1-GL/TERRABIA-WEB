@@ -6,12 +6,16 @@ import { connectRabbitMQ } from './events/rabbitmq.js';
 import { startConsumer } from './events/consumer.js';
 import { port } from './config/index.js';
 import Notification from './models/Notification.js';
+import rabbitmqRoutes from './routes/rabbitmqRoutes.js';
 
 (async () => {
   try {
     const app = express();
     app.use(express.json());
 
+    // Routes RabbitMQ
+    app.use('/api', rabbitmqRoutes);
+    
     app.get('/health', (req, res) => res.send('Notification Service running'));
 
     console.log('startup: connecting to DB...');
@@ -30,7 +34,15 @@ import Notification from './models/Notification.js';
     await startConsumer();
     console.log('startup: consumer started');
 
-    app.listen(port, () => console.log(`🚀 Notification Service running on port ${port}`));
+    app.listen(port, () => {
+      console.log(`🚀 Notification Service running on port ${port}`);
+      console.log(`📡 RabbitMQ Endpoints disponibles:`);
+      console.log(`   GET  /api/rabbitmq/queues - État des queues`);
+      console.log(`   POST /api/check/user-created - Vérifier les messages`);
+      console.log(`   POST /api/consume/user-created - Consommer un message`);
+      console.log(`   GET  /health - Health check`);
+    });
+
   } catch (err) {
     console.error('startup error:', err);
     process.exit(1);

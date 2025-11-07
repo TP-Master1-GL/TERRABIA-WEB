@@ -37,8 +37,7 @@ import rabbitmqRoutes from './routes/rabbitmqRoutes.js';
     app.listen(port, () => {
       console.log(`🚀 Notification Service running on port ${port}`);
       console.log(`📡 RabbitMQ Endpoints disponibles:`);
-      console.log(`   GET  /api/rabbitmq/queues - État des queues`);
-      console.log(`   POST /api/check/user-created - Vérifier les messages`);
+     
       console.log(`   POST /api/consume/user-created - Consommer un message`);
       console.log(`   GET  /health - Health check`);
     });

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TeraBia API - Swagger UI</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
+  <style>
+    body { 
+      margin: 0; padding: 0; 
+      background: #f8f9fa;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .swagger-ui { 
+      height: 100vh; 
+    }
+    .topbar { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    .topbar h1 { 
+      margin: 0; 
+      font-size: 1.8rem; 
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>🛡️ TeraBia User Service API</h1>
+    <p>Documentation Interactive - Testez vos endpoints en live !</p>
+  </div>
+  
+  <div id="swagger-ui"></div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js" crossorigin></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js" crossorigin></script>
+  
+  <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        url: "openapi.yaml",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        docExpansion: "none",
+        defaultModelsExpandDepth: 2,
+        defaultModelExpandDepth: 2,
+        defaultModelRendering: 'model',
+        displayOperationId: false,
+        filter: true,
+        showExtensions: false,
+        showCommonExtensions: true,
+        tryItOutEnabled: true,
+        persistAuthorization: true,
+        requestSnippetsEnabled: true,
+        tagsSorter: "alpha",
+        operationsSorter: "method",
+        oauth2RedirectUrl: window.location.origin + '/oauth2-redirect.html',
+        withCredentials: false
+      });
+
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>

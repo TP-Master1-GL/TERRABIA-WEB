@@ -1,0 +1,341 @@
+openapi: 3.1.0
+info:
+  title: TeraBia User Service API
+  version: 1.0.0
+  description: |
+    API complète de gestion des utilisateurs (inscription, connexion JWT, vérification email, réinitialisation mot de passe, CRUD admin).
+    **Projet Django + DRF + SimpleJWT + PostgreSQL**
+  contact:
+    name: Delphan Tsabeng
+    email: delphantsabeng13@gmail.com
+
+servers:
+  - url: http://127.0.0.1:8000
+    description: Local development
+  - url: https://api.terabia.cm
+    description: Production (à changer)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+          nullable: true
+        role:
+          type: string
+          enum: [acheteur, vendeur, entreprise_livraison]
+          default: acheteur
+        phone_number:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        is_verified:
+          type: boolean
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - email
+
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+          nullable: true
+        password:
+          type: string
+          format: password
+          writeOnly: true
+        role:
+          type: string
+          enum: [acheteur, vendeur, entreprise_livraison]
+        phone_number:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+      required:
+        - email
+        - password
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+        - email
+        - password
+
+    TokenResponse:
+      type: object
+      properties:
+        refresh:
+          type: string
+        access:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+
+    PasswordResetRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+        - email
+
+    PasswordResetConfirm:
+      type: object
+      properties:
+        new_password:
+          type: string
+          format: password
+          minLength: 8
+      required:
+        - new_password
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/register/:
+    post:
+      summary: Inscription + envoi email de vérification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Utilisateur créé + tokens JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Données invalides
+
+  /api/login/:
+    post:
+      summary: Connexion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Tokens + infos utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Identifiants invalides
+
+  /api/token/refresh/:
+    post:
+      summary: Rafraîchir le token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh:
+                  type: string
+              required:
+                - refresh
+      responses:
+        '200':
+          description: Nouveau access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+
+  /api/profile/:
+    get:
+      summary: Récupérer son profil
+      responses:
+        '200':
+          description: Profil utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      summary: Mettre à jour son profil (partial)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Profil mis à jour
+
+  /api/verify-email/{token}/:
+    get:
+      summary: Vérifier l'email via lien
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Email vérifié
+        '400':
+          description: Token expiré ou invalide
+
+  /password-reset-request/:
+    post:
+      summary: Demander réinitialisation mot de passe
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '200':
+          description: Email envoyé
+        '404':
+          description: Email non trouvé
+
+  /password-reset-confirm/{token}/:
+    post:
+      summary: Confirmer nouveau mot de passe
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+      responses:
+        '200':
+          description: Mot de passe changé
+        '400':
+          description: Token invalide ou expiré
+
+  /users/:
+    get:
+      summary: Lister tous les utilisateurs (admin)
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: ordering
+          in: query
+          schema:
+            type: string
+            enum: [date_joined, -date_joined, email, -email]
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Créer un utilisateur (admin uniquement)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Créé
+
+  /users/{pk}/:
+    get:
+      summary: Détail d’un utilisateur
+      parameters:
+        - name: pk
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+    patch:
+      summary: Mise à jour partielle (admin)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Mis à jour
+    put:
+      summary: Mise à jour complète (admin)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Mis à jour
+    delete:
+      summary: Supprimer un utilisateur (admin)
+      responses:
+        '204':
+          description: Supprimé

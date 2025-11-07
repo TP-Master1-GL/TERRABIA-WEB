@@ -1,0 +1,73 @@
+{
+  "server": {
+    "port": 8086
+  },
+  "secret_key": "terra-order-service-secret-2024-real-secret-change-in-production",
+  "debug": true,
+  "database": {
+    "name": "terra_orders_db",
+    "username": "terra_user",
+    "password": "terra_password",
+    "host": "localhost",
+    "port": "5432"
+  },
+  "spring": {
+    "rabbitmq": {
+      "host": "localhost",
+      "port": 5672,
+      "username": "guest",
+      "password": "guest"
+    }
+  },
+  "rabbitmq": {
+    "exchange": "user-events",
+    "routing-key": "user.created"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379
+  },
+  "order": {
+    "status": {
+      "pending": "PENDING",
+      "confirmed": "CONFIRMED",
+      "paid": "PAYMENT",
+      "in_delivery": "IN_DELIVERY",
+      "delivered": "DELIVERED",
+      "completed": "COMPLETED",
+      "cancelled": "CANCELLED"
+    },
+    "number_prefix": "TRB"
+  },
+  "transaction": {
+    "types": {
+      "payment": "PAYMENT",
+      "refund": "REFUND",
+      "commission": "COMMISSION",
+      "payout": "PAYOUT"
+    },
+    "payment_methods": {
+      "mobile_money": "MOBILE_MONEY",
+      "orange_money": "ORANGE_MONEY",
+      "mtn_momo": "MTN_MOMO",
+      "cash": "CASH",
+      "bank_transfer": "BANK_TRANSFER"
+    },
+    "status": {
+      "pending": "PENDING",
+      "processing": "PROCESSING",
+      "success": "SUCCESS",
+      "failed": "FAILED",
+      "reversed": "REVERSED"
+    },
+    "reference_prefix": "TXN"
+  },
+  "payment": {
+    "simulation_enabled": true,
+    "platform_commission_rate": 5.0
+  },
+  "delivery": {
+    "base_fee": 500,
+    "free_threshold": 10000
+  }
+}

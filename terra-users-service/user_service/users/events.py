@@ -88,6 +88,7 @@ def publish_user_created(user):
     rabbitmq_publisher.publish('user_created', {
         'user_id': user.id,
         'email': user.email,
+        'username': user.username,         
         'role': getattr(user, 'role', None),
         'created_at': user.date_joined.isoformat()
     })
@@ -97,6 +98,7 @@ def publish_user_updated(user):
     rabbitmq_publisher.publish('user_updated', {
         'user_id': user.id,
         'email': user.email,
+        'username': user.username, 
         'role': getattr(user, 'role', None),
         'updated_at': getattr(user, 'updated_at', user.date_joined).isoformat()
     })

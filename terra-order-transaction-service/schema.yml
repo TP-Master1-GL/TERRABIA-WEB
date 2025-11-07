@@ -1,0 +1,880 @@
+openapi: 3.0.3
+info:
+  title: Terrabia Order & Transaction Service API
+  version: 1.0.0
+  description: API for managing orders and transactions in Terrabia platform
+paths:
+  /api/orders/:
+    get:
+      operationId: api_orders_list
+      description: Récupère la liste paginée de toutes les commandes
+      summary: Lister toutes les commandes
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrderList'
+          description: ''
+    post:
+      operationId: api_orders_create
+      description: Crée une nouvelle commande avec les articles spécifiés
+      summary: Créer une nouvelle commande
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateOrder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateOrder'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOrder'
+          description: ''
+  /api/orders/{id}/:
+    get:
+      operationId: api_orders_retrieve
+      description: Récupère les détails d'une commande spécifique
+      summary: Récupérer une commande
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - api
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    put:
+      operationId: api_orders_update
+      description: Met à jour le statut d'une commande
+      summary: Mettre à jour une commande
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatus'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatus'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatus'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateOrderStatus'
+          description: ''
+    patch:
+      operationId: api_orders_partial_update
+      description: Met à jour partiellement une commande
+      summary: Mettre à jour partiellement une commande
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateOrderStatus'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateOrderStatus'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateOrderStatus'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateOrderStatus'
+          description: ''
+    delete:
+      operationId: api_orders_destroy
+      description: Supprime une commande (désactivé par défaut)
+      summary: Supprimer une commande
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - api
+      responses:
+        '204':
+          description: No response body
+  /api/orders/{id}/cancel/:
+    post:
+      operationId: api_orders_cancel_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Order'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Order'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/orders/{id}/process_payment/:
+    post:
+      operationId: api_orders_process_payment_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this order.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Order'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Order'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/orders/buyer_orders/:
+    get:
+      operationId: api_orders_buyer_orders_retrieve
+      tags:
+      - api
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/orders/farmer_orders/:
+    get:
+      operationId: api_orders_farmer_orders_retrieve
+      tags:
+      - api
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/transactions/:
+    get:
+      operationId: api_transactions_list
+      description: Récupère la liste paginée de toutes les transactions financières
+      summary: Lister toutes les transactions
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTransactionList'
+          description: ''
+    post:
+      operationId: api_transactions_create
+      description: Crée une nouvelle transaction financière
+      summary: Créer une nouvelle transaction
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+          description: ''
+  /api/transactions/{id}/:
+    get:
+      operationId: api_transactions_retrieve
+      description: Récupère les détails d'une transaction spécifique
+      summary: Récupérer une transaction
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this transaction.
+        required: true
+      tags:
+      - api
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+          description: ''
+    put:
+      operationId: api_transactions_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this transaction.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+          description: ''
+    patch:
+      operationId: api_transactions_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this transaction.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTransaction'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTransaction'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTransaction'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+          description: ''
+    delete:
+      operationId: api_transactions_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this transaction.
+        required: true
+      tags:
+      - api
+      responses:
+        '204':
+          description: No response body
+  /api/transactions/user_transactions/:
+    get:
+      operationId: api_transactions_user_transactions_retrieve
+      tags:
+      - api
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+          description: ''
+  /config/eureka/register/:
+    post:
+      operationId: config_eureka_register_create
+      description: S'enregistrer auprès d'Eureka
+      tags:
+      - config
+      responses:
+        '200':
+          description: No response body
+  /config/eureka/unregister/:
+    post:
+      operationId: config_eureka_unregister_create
+      description: Se désenregistrer d'Eureka
+      tags:
+      - config
+      responses:
+        '200':
+          description: No response body
+  /config/refresh/:
+    post:
+      operationId: config_refresh_create
+      description: Rafraîchir la configuration depuis le service de configuration
+      tags:
+      - config
+      responses:
+        '200':
+          description: No response body
+  /health/:
+    get:
+      operationId: health_retrieve
+      description: Endpoint de santé du service
+      tags:
+      - health
+      responses:
+        '200':
+          description: No response body
+  /webhooks/delivery/:
+    post:
+      operationId: webhooks_delivery_create
+      description: Webhook pour les mises à jour de livraison
+      tags:
+      - webhooks
+      responses:
+        '200':
+          description: No response body
+  /webhooks/payment/:
+    post:
+      operationId: webhooks_payment_create
+      description: Webhook pour les notifications de paiement
+      tags:
+      - webhooks
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    CreateOrder:
+      type: object
+      properties:
+        buyer_id:
+          type: string
+          maxLength: 100
+        farmer_id:
+          type: string
+          maxLength: 100
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          writeOnly: true
+        delivery_address:
+          type: string
+        delivery_latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        delivery_longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        buyer_notes:
+          type: string
+      required:
+      - buyer_id
+      - delivery_address
+      - farmer_id
+      - items
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          readOnly: true
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+          readOnly: true
+        order_number:
+          type: string
+          readOnly: true
+        buyer_id:
+          type: string
+          maxLength: 100
+        farmer_id:
+          type: string
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/Status8e3Enum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        delivered_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          nullable: true
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        delivery_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        delivery_id:
+          type: string
+          nullable: true
+          maxLength: 100
+        delivery_address:
+          type: string
+        delivery_latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        delivery_longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        farmer_latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        farmer_longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        buyer_notes:
+          type: string
+          nullable: true
+        cancellation_reason:
+          type: string
+          nullable: true
+        admin_notes:
+          type: string
+          nullable: true
+      required:
+      - buyer_id
+      - created_at
+      - delivery_address
+      - farmer_id
+      - id
+      - items
+      - order_number
+      - subtotal
+      - total_amount
+      - transactions
+      - updated_at
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        product_id:
+          type: string
+          maxLength: 100
+        product_name:
+          type: string
+          maxLength: 255
+        product_category:
+          type: string
+          maxLength: 100
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        unit:
+          type: string
+          maxLength: 50
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        total_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        product_image_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        notes:
+          type: string
+          nullable: true
+        order:
+          type: string
+          format: uuid
+      required:
+      - id
+      - order
+      - product_id
+      - product_name
+      - quantity
+      - total_price
+      - unit_price
+    PaginatedOrderList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+    PaginatedTransactionList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+    PatchedTransaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        transaction_reference:
+          type: string
+          readOnly: true
+        transaction_type:
+          $ref: '#/components/schemas/TransactionTypeEnum'
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payer_id:
+          type: string
+          maxLength: 100
+        payee_id:
+          type: string
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/TransactionStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        processed_at:
+          type: string
+          format: date-time
+          nullable: true
+        provider_transaction_id:
+          type: string
+          nullable: true
+          maxLength: 255
+        provider_response:
+          nullable: true
+        description:
+          type: string
+        failure_reason:
+          type: string
+          nullable: true
+        order:
+          type: string
+          format: uuid
+    PatchedUpdateOrderStatus:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/Status8e3Enum'
+        cancellation_reason:
+          type: string
+        admin_notes:
+          type: string
+    PaymentMethodEnum:
+      enum:
+      - MOBILE_MONEY
+      - ORANGE_MONEY
+      - MTN_MOMO
+      - CASH
+      - BANK_TRANSFER
+      type: string
+      description: |-
+        * `MOBILE_MONEY` - Mobile Money
+        * `ORANGE_MONEY` - Orange Money
+        * `MTN_MOMO` - MTN Mobile Money
+        * `CASH` - Espèces
+        * `BANK_TRANSFER` - Virement bancaire
+    Status8e3Enum:
+      enum:
+      - PENDING
+      - CONFIRMED
+      - PAID
+      - IN_DELIVERY
+      - DELIVERED
+      - COMPLETED
+      - CANCELLED
+      type: string
+      description: |-
+        * `PENDING` - En attente
+        * `CONFIRMED` - Confirmée
+        * `PAID` - Payée
+        * `IN_DELIVERY` - En livraison
+        * `DELIVERED` - Livrée
+        * `COMPLETED` - Terminée
+        * `CANCELLED` - Annulée
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        transaction_reference:
+          type: string
+          readOnly: true
+        transaction_type:
+          $ref: '#/components/schemas/TransactionTypeEnum'
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payer_id:
+          type: string
+          maxLength: 100
+        payee_id:
+          type: string
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/TransactionStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        processed_at:
+          type: string
+          format: date-time
+          nullable: true
+        provider_transaction_id:
+          type: string
+          nullable: true
+          maxLength: 255
+        provider_response:
+          nullable: true
+        description:
+          type: string
+        failure_reason:
+          type: string
+          nullable: true
+        order:
+          type: string
+          format: uuid
+      required:
+      - amount
+      - created_at
+      - id
+      - order
+      - payee_id
+      - payer_id
+      - payment_method
+      - transaction_reference
+      - transaction_type
+    TransactionStatusEnum:
+      enum:
+      - PENDING
+      - PROCESSING
+      - SUCCESS
+      - FAILED
+      - REVERSED
+      type: string
+      description: |-
+        * `PENDING` - En attente
+        * `PROCESSING` - En traitement
+        * `SUCCESS` - Réussie
+        * `FAILED` - Échouée
+        * `REVERSED` - Annulée
+    TransactionTypeEnum:
+      enum:
+      - PAYMENT
+      - REFUND
+      - COMMISSION
+      - PAYOUT
+      type: string
+      description: |-
+        * `PAYMENT` - Paiement
+        * `REFUND` - Remboursement
+        * `COMMISSION` - Commission
+        * `PAYOUT` - Paiement agriculteur
+    UpdateOrderStatus:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/Status8e3Enum'
+        cancellation_reason:
+          type: string
+        admin_notes:
+          type: string
+      required:
+      - status

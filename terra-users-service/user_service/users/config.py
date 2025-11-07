@@ -60,3 +60,4 @@ def get_fake_config():
         "eureka.client.serviceUrl.defaultZone": "http://localhost:8761/eureka/",
         "security.jwt.secret": "test-secret-users-2025",
     }
+

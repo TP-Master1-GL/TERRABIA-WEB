@@ -18,7 +18,7 @@ def get_config(service_name="terra-auth-service"):
     max_retries = 5
     for i in range(max_retries):
         try:
-            resp = requests.get(f"{url}/{service_name}/default", timeout=5)
+            resp = requests.get(f"{url}/{service_name}/default", timeout=15)
             if resp.status_code == 200:
                 source = resp.json()["propertySources"][0]["source"]
                 logger.info("✅ Config récupérée depuis terra-conf-service")

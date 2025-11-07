@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>TeraBia API Documentation</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .container { 
+      text-align: center; 
+      max-width: 800px; 
+      padding: 2rem;
+    }
+    h1 { 
+      font-size: 3.5rem; 
+      margin-bottom: 1rem; 
+      font-weight: 700;
+    }
+    .subtitle { 
+      font-size: 1.3rem; 
+      opacity: 0.9; 
+      margin-bottom: 3rem;
+    }
+    .cards { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+      gap: 2rem; 
+      margin-top: 3rem;
+    }
+    .card { 
+      background: rgba(255,255,255,0.1); 
+      backdrop-filter: blur(20px); 
+      border-radius: 20px; 
+      padding: 2.5rem; 
+      text-decoration: none; 
+      color: white; 
+      transition: all 0.3s ease; 
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .card:hover { 
+      transform: translateY(-10px); 
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
+    }
+    .card h3 { 
+      font-size: 1.5rem; 
+      margin-bottom: 1rem;
+    }
+    .card p { 
+      opacity: 0.8; 
+      margin-bottom: 1.5rem;
+    }
+    .emoji { font-size: 3rem; display: block; margin-bottom: 1rem; }
+    @media (max-width: 768px) {
+      h1 { font-size: 2.5rem; }
+      .cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ TeraBia API</h1>
+    <p class="subtitle">User Service - Documentation Complète</p>
+    
+    <div class="cards">
+      <a href="docs.html" class="card">
+        <span class="emoji">📖</span>
+        <h3>ReDoc</h3>
+        <p>Documentation moderne et élégante</p>
+      </a>
+      
+      <a href="swagger.html" class="card">
+        <span class="emoji">⚡</span>
+        <h3>Swagger UI</h3>
+        <p>Testez vos endpoints en temps réel !</p>
+      </a>
+      
+      <a href="openapi.yaml" class="card" download>
+        <span class="emoji">📥</span>
+        <h3>OpenAPI YAML</h3>
+        <p>Importez dans Postman / Insomnia</p>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

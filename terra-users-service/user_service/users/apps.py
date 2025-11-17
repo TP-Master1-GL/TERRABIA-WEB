@@ -1,71 +1,57 @@
 # users/apps.py
 from django.apps import AppConfig
-import socket
 import threading
 import time
+import socket
 import requests
 import os
 import sys
 import logging
-from .config import get_config  # tu dois avoir le même module que dans auth_app
-# from .rabbitmq_consumer import start_consumer  # décommente si ton service users consomme RabbitMQ
+from .config_loader import get_app_config
+from .rabbitmq_consumer import start_consumer
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 def get_local_ip():
-    """Récupère l'IP locale accessible par les autres services."""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
         s.close()
         return ip
-    except Exception:
+    except:
         return "127.0.0.1"
-
 
 class UsersConfig(AppConfig):
     name = 'users'
     default_auto_field = 'django.db.models.BigAutoField'
 
     def ready(self):
-        """Exécuté quand Django démarre le service Users."""
-        # === PROTECTION CONTRE LES TESTS ===
-        if (
-            'pytest' in sys.modules or
-            'PYTEST_CURRENT_TEST' in os.environ or
-            'RUN_MAIN' in os.environ or
-            os.environ.get('DJANGO_SETTINGS_MODULE', '').endswith('.test')
-        ):
-            logger.info("[TEST MODE] Eureka & RabbitMQ désactivés pour Users")
-            return
-
-        # === ÉVITER DOUBLE LANCEMENT ===
+        # Éviter double lancement (Django recharge parfois ready())
         if hasattr(self, '_threads_started'):
             return
         self._threads_started = True
 
-        logger.info("[Django Users] Démarrage des threads : Eureka + RabbitMQ")
+        # Désactiver en mode test
+        if 'pytest' in sys.modules or os.environ.get('RUN_MAIN') or 'test' in sys.argv:
+            logger.info("[Users] Mode test détecté → Eureka & RabbitMQ désactivés")
+            return
 
-        # Thread d’enregistrement Eureka
-        eureka_thread = threading.Thread(target=self._register_eureka, daemon=True)
-        eureka_thread.start()
+        logger.info("[Users] Démarrage des threads background (Eureka + RabbitMQ)")
 
-        # Thread de RabbitMQ (décommente si nécessaire)
-        # rabbitmq_thread = threading.Thread(target=start_consumer, daemon=True)
-        # rabbitmq_thread.start()
+        # Thread Eureka
+        threading.Thread(target=self._register_eureka, daemon=True).start()
+
+        # Thread RabbitMQ (même si silencieux pour l’instant)
+        threading.Thread(target=start_consumer, daemon=True).start()
 
     def _register_eureka(self):
-        """Enregistrement du service Users dans Eureka."""
-        time.sleep(8)
+        time.sleep(8)  # laisser le temps au serveur de démarrer
         try:
-            config = get_config()
-            eureka_url = config["eureka.client.serviceUrl.defaultZone"].rstrip("/")
-            port = config["server.port"]
+            config = get_app_config()
+            eureka_url = config.get("eureka.client.serviceUrl.defaultZone", "http://localhost:8761/eureka/").rstrip("/")
+            port = config.get("server.port", "8082")
             ip_addr = get_local_ip()
-
             instance_id = f"{ip_addr}:{port}"
 
             payload = {
@@ -90,9 +76,8 @@ class UsersConfig(AppConfig):
                 headers={"Content-Type": "application/json"},
                 timeout=10
             )
-
             status = "OK" if resp.status_code in [200, 204] else f"ÉCHEC {resp.status_code}"
-            logger.info(f"[Eureka] Users enregistré : {instance_id} → {status}")
+            logger.info(f"[Eureka] TERRA-USERS-SERVICE enregistré → {instance_id} | {status}")
 
         except Exception as e:
-            logger.error(f"[Eureka] Erreur Users : {e}")
+            logger.error(f"[Eureka] Erreur enregistrement Users : {e}")

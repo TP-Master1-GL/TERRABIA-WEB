@@ -1,4 +1,4 @@
-import Eureka from 'eureka-js-client';
+import { Eureka } from 'eureka-js-client';
 import config from '../config/index.js';
 
 class EurekaService {
@@ -8,12 +8,12 @@ class EurekaService {
   }
 
   initialize() {
-    const { port, serviceName, eureka } = config;
+    const { port, serviceName = 'notification-service' } = config;
 
     this.client = new Eureka({
       eureka: {
-        host: eureka.host,
-        port: eureka.port,
+        host: process.env.EUREKA_HOST || 'localhost',
+        port: process.env.EUREKA_PORT || 8761,
         servicePath: '/eureka/apps/',
         maxRetries: 10,
         requestRetryDelay: 2000,
@@ -22,9 +22,14 @@ class EurekaService {
         app: serviceName,
         hostName: process.env.HOSTNAME || 'localhost',
         ipAddr: process.env.INSTANCE_IP || '127.0.0.1',
+        
+        // ⭐ AJOUTEZ CETTE LIGNE ⭐
+        instanceId: `${serviceName}:${port}`,
+        
         statusPageUrl: `http://localhost:${port}/health`,
         healthCheckUrl: `http://localhost:${port}/health`,
         homePageUrl: `http://localhost:${port}`,
+        
         port: {
           '$': port,
           '@enabled': true,
@@ -33,22 +38,13 @@ class EurekaService {
         dataCenterInfo: {
           '@class': 'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo',
           name: 'MyOwn',
-        },
-        metadata: {
-          'version': '1.0.0',
-          'environment': process.env.NODE_ENV || 'development'
         }
       },
     });
 
-    this.setupEventHandlers();
-    return this.client;
-  }
-
-  setupEventHandlers() {
     this.client.on('registered', () => {
       this.isRegistered = true;
-      console.log('✅ Successfully registered with Eureka');
+      console.log(`✅ Registered with Eureka: ${serviceName}:${port}`);
     });
 
     this.client.on('deregistered', () => {
@@ -56,13 +52,7 @@ class EurekaService {
       console.log('❌ Deregistered from Eureka');
     });
 
-    this.client.on('heartbeat', () => {
-      console.log('💓 Eureka heartbeat sent');
-    });
-
-    this.client.on('registryUpdated', () => {
-      console.log('Eureka registry updated');
-    });
+    return this.client;
   }
 
   start() {

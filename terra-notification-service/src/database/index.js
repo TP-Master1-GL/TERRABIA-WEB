@@ -2,11 +2,11 @@ import { Sequelize } from 'sequelize';
 import config from '../config/index.js';
 
 const sequelize = new Sequelize(
-  config.DB_NAME || config.database || config.dbName,
-  config.DB_USER || config.user || config.dbUser,
-  config.DB_PASSWORD || config.password || config.dbPassword,
+  config.database.name,           // Utilise la nouvelle structure
+  config.database.user,           // Utilise la nouvelle structure
+  config.database.password,       // Utilise la nouvelle structure
   {
-    host: config.DB_HOST || config.host,
+    host: config.database.host,   // Utilise la nouvelle structure
     dialect: 'mysql',
     logging: false,
   }
@@ -23,4 +23,3 @@ export async function connectDB() {
 }
 
 export { sequelize };
-

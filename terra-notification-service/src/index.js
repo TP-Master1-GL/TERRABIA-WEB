@@ -4,25 +4,40 @@ import express from 'express';
 import { connectDB } from './database/index.js';
 import { connectRabbitMQ } from './events/rabbitmq.js';
 import { startConsumer } from './events/consumer.js';
-import { initializeConfig } from './config/index.js'; // MODIFIÉ
+import { initializeConfig } from './config/index.js';
 import Notification from './models/Notification.js';
 import rabbitmqRoutes from './routes/rabbitmqRoutes.js';
-import eurekaClient from './services/eurekaClient.js'; // NOUVEAU
+import eurekaClient from './services/eurekaClient.js';
 
 (async () => {
   try {
-    // ÉTAPE 1: Initialiser la configuration depuis le Config Service Spring Boot
     console.log('startup: fetching configuration from Config Service...');
-    const config = await initializeConfig(); // MODIFIÉ
+    const config = await initializeConfig();
     console.log('startup: configuration loaded successfully');
 
     const app = express();
     app.use(express.json());
 
+    // ⭐ AJOUTEZ CETTE ROUTE RACINE ⭐
+    app.get('/', (req, res) => {
+      res.json({
+        service: 'Notification Service',
+        status: 'RUNNING',
+        version: '1.0.0',
+        endpoints: {
+          health: '/health',
+          consume: '/api/consume/user-created',
+          manualTrigger: '/api/events/user-created'
+        },
+        eurekaRegistered: eurekaClient.isConnected(),
+        timestamp: new Date().toISOString()
+      });
+    });
+
     // Routes RabbitMQ
     app.use('/api', rabbitmqRoutes);
     
-    // Health check amélioré pour Eureka
+    // Health check
     app.get('/health', (req, res) => {
       res.json({
         status: 'UP',
@@ -48,17 +63,15 @@ import eurekaClient from './services/eurekaClient.js'; // NOUVEAU
     await startConsumer();
     console.log('startup: consumer started');
 
-    // ⭐⭐⭐ VOTRE APP.LISTEN EST ICI - CONSERVÉ ⭐⭐⭐
     app.listen(config.port, () => {
       console.log(`🚀 Notification Service running on port ${config.port}`);
-      
-      // ÉTAPE 2: S'enregistrer auprès d'Eureka APRÈS le démarrage du serveur
       console.log('startup: registering with Eureka...');
       eurekaClient.start();
       
-      console.log(`📡 RabbitMQ Endpoints disponibles:`);
-      console.log(`   POST /api/consume/user-created - Consommer un message`);
+      console.log(`📡 Endpoints disponibles:`);
+      console.log(`   GET  / - Service info`);
       console.log(`   GET  /health - Health check`);
+      console.log(`   POST /api/consume/user-created - Consommer un message RabbitMQ`);
     });
 
     // Gestion propre de l'arrêt

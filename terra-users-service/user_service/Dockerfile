@@ -23,4 +23,9 @@ COPY . .
 
 # Commande de démarrage
 #CMD ["python3", "manage.py", "runserver", "0.0.0.0:8083"]
-CMD ["sh", "-c", "python3 manage.py runserver 0.0.0.0:${SERVER_PORT:-8083}"]
+# CMD ["sh", "-c", "python3 manage.py runserver 0.0.0.0:${SERVER_PORT:-8083}"]
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+# Start server
+CMD ["gunicorn", "--bind", "0.0.0.0:8083", "--workers", "3", "terra_users.wsgi:application"]

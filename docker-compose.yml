@@ -1,0 +1,192 @@
+version: '3.8'
+services:
+  terra-conf-service:
+    build:
+      context: ./terra-conf-service
+    container_name: terra-conf-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_APLLICATION_NAME= terra-conf-service
+      - SERVER_PORT=8080
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/TP-Master1-GL/TERRABIA-WEB.git
+    networks:
+      - terra-network
+
+  terra-registry-service:
+    build:
+      context: ./terra-registry-service
+    container_name: terra-registry-service
+    depends_on:
+      - terra-conf-service
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_APLLICATION_NAME= terra-registry-service
+      - SPRING_CLOUD_CONFIG_URI=http://terra-conf-service:8080/
+      - SPRING_CONFIG_IMPORT=configserver://http://terra-conf-service:8080/
+    networks:
+      - terra-network
+  terra-proxy-service:  
+    build:
+      context: ./terra-proxy-service
+    container_name: terra-proxy-service
+    depends_on:
+      - terra-conf-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_APLLICATION_NAME= terra-proxy-service
+      - SPRING_CLOUD_CONFIG_URI=http://terra-conf-service:8080/
+      - SPRING_CONFIG_IMPORT=configserver://http://terra-conf-service:8080/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173
+      - CORS_ALLOWED_METHODS=GET,POST,PUT,PATCH,DELETE,OPTIONS
+      - CORS_ALLOWED_HEADERS=*
+      - CORS_ALLOW_CREDENTIALS=true
+    networks:
+      - terra-network
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+# Postgres database for orders and transactions service
+  terra-postgres-db:
+    image: postgres:15-alpine
+    container_name: terra-postgres-db
+    environment:
+      - POSTGRES_USER=terra_user
+      - POSTGRES_PASSWORD=terra_password
+      - POSTGRES_DB=terra_orders_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - terra-postgres-data:/var/lib/postgresql/data
+    networks:
+      - terra-network
+
+#service for user management
+  terra-order-transaction-service:
+    build:
+      context: ./terra-order-transaction-service
+      dockerfile: Dockerfile
+    container_name: terra-order-transaction-service
+    depends_on:
+      - terra-conf-service
+      - terra-registry-service
+      - terra_orders_db
+    ports:
+      - "8086:8086"
+    environment:
+      - DJANGO-SETTINGS_MODULE=terra_order_transaction_service.settings
+      - DEBUG=TRUE
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
+      - SECRET_KEY=terra-order-secret-key-2024-change-in-production
+      - DATABASE_URL=postgres://terra_user:terra_password@terra-postgres-db:5432/terra_orders_db
+      - REDIS_URL=redis://terra-redis:6379/0
+      - ALLOWED_HOSTS=localhost,127.0.0.1,terra-order-transaction-service,*.terrabia.local
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://terra-order-transaction-service:8086
+      
+    # volumes:
+    #   - ./terra-order-transaction-service:/app  
+    #   - static_volume:/app/staticfiles
+    #   - media_volume:/app/mediafiles
+    #   - logs_volume:/app/logs
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - terra-network
+
+  terra-redis:
+    image: redis:7-alpine
+    container_name: terra-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - terra-redis-data:/data
+    networks:
+      - terra-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+#service for user authentication en django
+  terra-auth-service:
+    build:
+      context: ./terra-auth-service
+      dockerfile: Dockerfile
+    container_name: terra-auth-service
+    depends_on:
+      - terra-conf-service
+      - terra-registry-service
+      - terra-redis
+    ports:
+      - "8085:8085"
+    environment:
+      - DJANGO-SETTINGS-MODULE=terra_auth_service.settings
+      - DEBUG=TRUE
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
+      - SECRET_KEY=terra-auth-secret-key-2024-change-in-production
+      - REDIS_URL=redis://terra-redis:6379/0
+      - ALLOWED_HOSTS=localhost
+    networks:
+      - terra-network
+
+  terra-users-service:
+    build:
+      context: ./terra-users-service
+      dockerfile: Dockerfile
+    container_name: terra-users-service
+    depends_on:
+      - terra-conf-service
+      - terra-registry-service
+      - terra-users-db
+    ports:
+      - "8084:8084"
+    environment:
+      - name=value
+      - DJANGO-SETTINGS-MODULE=terra_users_service.settings
+      - DEBUG=TRUE
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
+    networks:
+      - terra-network
+
+
+  terra-product-service:
+      build:
+        context: ./terra-product-service
+        dockerfile: Dockerfile
+      container_name: terra-product-service
+      depends_on:
+        - terra-conf-service
+        - terra-registry-service
+        - terra-product-db
+      ports:
+        - "8085:8085"
+      environment:
+        - name=value
+        - DJANGO-SETTINGS-MODULE=terra_product_service.settings
+        - DEBUG=TRUE
+        - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
+      networks:
+        - terra-network
+
+
+
+networks:
+  terra-network:
+    driver: bridge

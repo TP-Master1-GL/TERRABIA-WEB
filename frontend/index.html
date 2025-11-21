@@ -1,165 +1,404 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TERRABIA - Marché Agricole Camerounais</title>
     
-    <!-- Tailwind CSS CDN avec animations -->
+    <!-- Meta tags SEO améliorés -->
+    <title>TERRABIA | Plateforme Agricole Camerounaise - Produits Frais & Locaux</title>
+    <meta name="description" content="TERRABIA connecte agriculteurs et consommateurs au Cameroun. Découvrez des produits frais, locaux et de qualité directement de nos producteurs partenaires.">
+    <meta name="keywords" content="agriculture cameroun, produits frais, marché local, agriculteurs, livraison, produits bio, TERRABIA">
+    <meta name="author" content="TERRABIA">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://terrabia.cm/">
+    <meta property="og:title" content="TERRABIA | Plateforme Agricole Camerounaise">
+    <meta property="og:description" content="Connectons agriculteurs et consommateurs pour une alimentation saine et locale au Cameroun.">
+    <meta property="og:image" content="/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://terrabia.cm/">
+    <meta property="twitter:title" content="TERRABIA | Plateforme Agricole Camerounaise">
+    <meta property="twitter:description" content="Connectons agriculteurs et consommateurs pour une alimentation saine et locale au Cameroun.">
+    <meta property="twitter:image" content="/twitter-image.jpg">
+    
+    <!-- Favicon amélioré -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#379a58">
+    
+    <!-- Tailwind CSS avec configuration étendue -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.0/cdn.min.js"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             colors: {
               primary: {
-                50: '#f0f9f4',
-                100: '#dcf2e3',
-                200: '#bce5c9',
-                300: '#8fd1a3',
-                400: '#5cb57a',
-                500: '#379a58',
-                600: '#2a7a46',
-                700: '#23623a',
-                800: '#1d4e2f',
-                900: '#183f27',
+                50: '#f0fdf4',
+                100: '#dcfce7',
+                200: '#bbf7d0',
+                300: '#86efac',
+                400: '#4ade80',
+                500: '#22c55e',
+                600: '#16a34a',
+                700: '#15803d',
+                800: '#166534',
+                900: '#14532d',
+              },
+              secondary: {
+                50: '#fffbeb',
+                100: '#fef3c7',
+                200: '#fde68a',
+                300: '#fcd34d',
+                400: '#fbbf24',
+                500: '#f59e0b',
+                600: '#d97706',
+                700: '#b45309',
+                800: '#92400e',
+                900: '#78350f',
               },
               earth: {
-                50: '#fdf8f0',
-                100: '#fcecd9',
-                200: '#f7d4a8',
-                300: '#f1b46c',
-                400: '#ea8c3d',
-                500: '#e4711a',
-                600: '#d55613',
-                700: '#b14112',
-                800: '#8e3516',
-                900: '#732e15',
+                50: '#fefce8',
+                100: '#fef9c3',
+                200: '#fef08a',
+                300: '#fde047',
+                400: '#facc15',
+                500: '#eab308',
+                600: '#ca8a04',
+                700: '#a16207',
+                800: '#854d0e',
+                900: '#713f12',
               }
             },
+            fontFamily: {
+              'sans': ['Inter', 'system-ui', 'sans-serif'],
+              'display': ['Inter', 'system-ui', 'sans-serif'],
+            },
+            fontSize: {
+              'xs': ['0.75rem', { lineHeight: '1rem' }],
+              'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+              'base': ['1rem', { lineHeight: '1.5rem' }],
+              'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+              'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+              '2xl': ['1.5rem', { lineHeight: '2rem' }],
+              '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+              '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+              '5xl': ['3rem', { lineHeight: '1' }],
+              '6xl': ['3.75rem', { lineHeight: '1' }],
+              '7xl': ['4.5rem', { lineHeight: '1' }],
+            },
             animation: {
+              'fade-in': 'fadeIn 0.5s ease-in-out',
+              'fade-in-up': 'fadeInUp 0.6s ease-out',
+              'fade-in-down': 'fadeInDown 0.6s ease-out',
+              'fade-in-left': 'fadeInLeft 0.6s ease-out',
+              'fade-in-right': 'fadeInRight 0.6s ease-out',
+              'zoom-in': 'zoomIn 0.3s ease-out',
+              'slide-in-up': 'slideInUp 0.4s ease-out',
+              'slide-in-down': 'slideInDown 0.4s ease-out',
+              'bounce-in': 'bounceIn 0.6s ease-out',
+              'pulse-soft': 'pulseSoft 2s ease-in-out infinite',
               'float': 'float 6s ease-in-out infinite',
-              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'bounce-slow': 'bounce 3s infinite',
-              'fade-in-up': 'fadeInUp 0.8s ease-out',
-              'fade-in-down': 'fadeInDown 0.8s ease-out',
-              'slide-in-left': 'slideInLeft 0.8s ease-out',
-              'slide-in-right': 'slideInRight 0.8s ease-out',
+              'float-slow': 'float 8s ease-in-out infinite',
+              'shimmer': 'shimmer 2s ease-in-out infinite',
             },
             keyframes: {
-              float: {
-                '0%, 100%': { transform: 'translateY(0px)' },
-                '50%': { transform: 'translateY(-20px)' },
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
               },
               fadeInUp: {
-                '0%': { opacity: '0', transform: 'translateY(30px)' },
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
               },
               fadeInDown: {
-                '0%': { opacity: '0', transform: 'translateY(-30px)' },
+                '0%': { opacity: '0', transform: 'translateY(-20px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
               },
-              slideInLeft: {
-                '0%': { opacity: '0', transform: 'translateX(-30px)' },
+              fadeInLeft: {
+                '0%': { opacity: '0', transform: 'translateX(-20px)' },
                 '100%': { opacity: '1', transform: 'translateX(0)' },
               },
-              slideInRight: {
-                '0%': { opacity: '0', transform: 'translateX(30px)' },
+              fadeInRight: {
+                '0%': { opacity: '0', transform: 'translateX(20px)' },
                 '100%': { opacity: '1', transform: 'translateX(0)' },
+              },
+              zoomIn: {
+                '0%': { opacity: '0', transform: 'scale(0.95)' },
+                '100%': { opacity: '1', transform: 'scale(1)' },
+              },
+              slideInUp: {
+                '0%': { transform: 'translateY(100%)' },
+                '100%': { transform: 'translateY(0)' },
+              },
+              slideInDown: {
+                '0%': { transform: 'translateY(-100%)' },
+                '100%': { transform: 'translateY(0)' },
+              },
+              bounceIn: {
+                '0%': { opacity: '0', transform: 'scale(0.3)' },
+                '50%': { opacity: '1', transform: 'scale(1.05)' },
+                '70%': { transform: 'scale(0.9)' },
+                '100%': { opacity: '1', transform: 'scale(1)' },
+              },
+              pulseSoft: {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0.8' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0px)' },
+                '50%': { transform: 'translateY(-12px)' },
+              },
+              shimmer: {
+                '0%': { transform: 'translateX(-100%)' },
+                '100%': { transform: 'translateX(100%)' },
               }
+            },
+            boxShadow: {
+              'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+              'medium': '0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 20px -5px rgba(0, 0, 0, 0.04)',
+              'large': '0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+              'glow': '0 0 20px rgba(34, 197, 94, 0.15)',
+              'glow-lg': '0 0 40px rgba(34, 197, 94, 0.2)',
+            },
+            backdropBlur: {
+              xs: '2px',
             }
           }
-        }
+        },
+        plugins: [
+          function({ addUtilities }) {
+            const newUtilities = {
+              '.text-shadow': {
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              },
+              '.text-shadow-md': {
+                textShadow: '0 4px 8px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)',
+              },
+              '.text-shadow-lg': {
+                textShadow: '0 15px 30px rgba(0, 0, 0, 0.11), 0 5px 15px rgba(0, 0, 0, 0.08)',
+              },
+              '.text-shadow-none': {
+                textShadow: 'none',
+              },
+            }
+            addUtilities(newUtilities)
+          }
+        ]
       }
     </script>
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts optimisées -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Performance optimizations -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
     <style>
+      /* CSS critique pour le chargement initial */
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
+      
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f8fafc;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #fafafa;
+        color: #1a202c;
+        line-height: 1.6;
         overflow-x: hidden;
-      }
-      .agriculture-bg {
-        background: linear-gradient(135deg, #f0f9f4 0%, #e6f7ed 100%);
-        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23379a58' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeSpeed;
       }
       
-      /* Custom scrollbar */
+      /* Optimisation des images */
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      /* Amélioration de la scrollbar */
       ::-webkit-scrollbar {
         width: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
+        background: #f1f5f9;
+        border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #379a58, #2a7a46);
-        border-radius: 10px;
+        background: linear-gradient(180deg, #22c55e, #16a34a);
+        border-radius: 4px;
+        transition: all 0.3s ease;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(180deg, #2a7a46, #1d4e2f);
+        background: linear-gradient(180deg, #16a34a, #15803d);
       }
       
-      /* Gradient text */
+      /* Styles pour le fond agricole */
+      .agriculture-bg {
+        background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f0f9ff 100%);
+        background-image: 
+          radial-gradient(circle at 10% 20%, rgba(34, 197, 94, 0.03) 0%, transparent 20%),
+          radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.03) 0%, transparent 20%),
+          url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2322c55e' fill-opacity='0.02'%3E%3Cpath d='M50 50c0-5.523-4.477-10-10-10s-10 4.477-10 10 4.477 10 10 10 10-4.477 10-10zm-10 8c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+      
+      /* Text gradients améliorés */
       .gradient-text {
-        background: linear-gradient(135deg, #379a58 0%, #e4711a 100%);
+        background: linear-gradient(135deg, #22c55e 0%, #f59e0b 50%, #eab308 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        background-size: 200% 200%;
+        animation: gradientShift 4s ease infinite;
+      }
+      
+      .gradient-text-primary {
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
       }
       
-      /* Shine effect */
-      .shine-effect {
+      @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+      
+      /* Effets de shine modernes */
+      .shine-hover {
         position: relative;
         overflow: hidden;
       }
-      .shine-effect::before {
+      
+      .shine-hover::before {
         content: '';
         position: absolute;
         top: 0;
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: left 0.5s;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transition: left 0.7s ease;
+        z-index: 1;
       }
-      .shine-effect:hover::before {
+      
+      .shine-hover:hover::before {
         left: 100%;
       }
       
-      /* Floating elements */
-      .floating {
-        animation: float 6s ease-in-out infinite;
+      /* Animations de particules */
+      .particle {
+        position: absolute;
+        background: rgba(34, 197, 94, 0.1);
+        border-radius: 50%;
+        pointer-events: none;
       }
       
-      /* Pulse glow */
-      .pulse-glow {
-        animation: pulse-glow 2s ease-in-out infinite alternate;
+      /* Loading states */
+      .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
       }
-      @keyframes pulse-glow {
-        from {
-          box-shadow: 0 0 20px rgba(55, 154, 88, 0.4);
+      
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      
+      /* Focus styles accessibilité */
+      .focus-ring:focus {
+        outline: 2px solid #22c55e;
+        outline-offset: 2px;
+      }
+      
+      /* Dark mode support basique */
+      @media (prefers-color-scheme: dark) {
+        .dark-auto {
+          background-color: #0f172a;
+          color: #f8fafc;
         }
-        to {
-          box-shadow: 0 0 30px rgba(55, 154, 88, 0.8);
+      }
+      
+      /* Print styles */
+      @media print {
+        * {
+          background: transparent !important;
+          color: black !important;
+          box-shadow: none !important;
+          text-shadow: none !important;
+        }
+      }
+      
+      /* Reduced motion support */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
         }
       }
     </style>
   </head>
-  <body>
-    <div id="root"></div>
+  <body class="agriculture-bg min-h-screen">
+    <!-- Fallback content pour le JS -->
+    <noscript>
+      <div class="flex items-center justify-center min-h-screen p-8">
+        <div class="text-center max-w-md">
+          <div class="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <span class="text-2xl">🌱</span>
+          </div>
+          <h1 class="text-2xl font-bold text-gray-900 mb-4">JavaScript Requis</h1>
+          <p class="text-gray-600 mb-6">
+            TERRABIA nécessite JavaScript pour fonctionner correctement. Veuillez activer JavaScript dans votre navigateur pour continuer.
+          </p>
+          <a href="https://www.enable-javascript.com/fr/" 
+             class="inline-block bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors">
+            Comment activer JavaScript
+          </a>
+        </div>
+      </div>
+    </noscript>
+    
+    <!-- Point de montage de l'application React -->
+    <div id="root">
+      <!-- Loading state initial -->
+      <div class="flex items-center justify-center min-h-screen">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse-soft">
+            <span class="text-2xl text-white">🌱</span>
+          </div>
+          <p class="text-gray-600 font-medium">Chargement de TERRABIA...</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scripts d'application -->
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Analytics (optionnel) -->
+    <script defer data-domain="terrabia.cm" src="https://plausible.io/js/script.js"></script>
   </body>
 </html>

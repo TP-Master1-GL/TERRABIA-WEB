@@ -124,6 +124,31 @@ services:
       retries: 3
     restart: unless-stopped
 
+
+#base de donnes du service d'authentification(mysql)
+  terra-auth-db:
+    image: mysql:8.0
+    container_name: terabia
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=terabia
+      - MYSQL_USER=terabia_user
+      - MYSQL_PASSWORD=terabia_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - terra-auth-data:/var/lib/mysql
+    networks:
+      - terra-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+
+
 #service for user authentication en django
   terra-auth-service:
     build:
@@ -134,6 +159,7 @@ services:
       - terra-conf-service
       - terra-registry-service
       - terra-redis
+      - terra-auth-db
     ports:
       - "8085:8085"
     environment:
@@ -145,6 +171,29 @@ services:
       - ALLOWED_HOSTS=localhost
     networks:
       - terra-network
+
+
+#base de donnes du service des utilisateurs (postgresql)
+  terra-users-db:
+    image: postgres:15-alpine
+    container_name: terra-users-db
+    environment:
+      - POSTGRES_USER=delphan
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=terra_users_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - terra-users-data:/var/lib/postgresql/data
+    networks:
+      - terra-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "terra_users_user"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
 
   terra-users-service:
     build:
@@ -165,6 +214,47 @@ services:
     networks:
       - terra-network
 
+# base de donnes du service de produits(mysql)
+  terabia_product:
+    image: mysql:8.0
+    container_name: terabia_product
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=terabia_product_db
+      - MYSQL_USER=terabia_user
+      - MYSQL_PASSWORD=terabia_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - terabia-product-data:/var/lib/mysql
+    networks:
+      - terra-network
+  healthcheck:
+    test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+  restart: unless-stopped 
+
+  terabia-product:
+    container_name: terabia-product
+    environment:
+      - MYSQL_ROOT_PASSWORD=terra_root_password
+      - MYSQL_DATABASE=terabia_product_db
+      - MYSQL_USER=terra_product_user
+      - MYSQL_PASSWORD=terra_product_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - terabia-product-data:/var/lib/mysql
+    networks:
+      - terra-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
 
   terra-product-service:
       build:
@@ -174,7 +264,7 @@ services:
       depends_on:
         - terra-conf-service
         - terra-registry-service
-        - terra-product-db
+        - terabia-product
       ports:
         - "8085:8085"
       environment:
@@ -185,7 +275,71 @@ services:
       networks:
         - terra-network
 
+#base de donnes  dudu service de notification(mysql)
+  terra-notification-db:
+    image: mysql:8.0
+    container_name: terra-notification-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=terra_notification_db
+      - MYSQL_USER=terra_notification_user
+      - MYSQL_PASSWORD=
+    ports:
+      - "3309:3306"
+    volumes:
+      - terra-notification-data:/var/lib/mysql
+    networks:
+      - terra-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
 
+
+
+
+#service de notification(node.js)
+  terra-notification-service:
+    build:
+      context: ./terra-notification-service
+      dockerfile: Dockerfile
+    container_name: terra-notification-service
+    depends_on:
+      - terra-conf-service
+      - terra-registry-service
+      - terra-redis
+    ports:
+      - "4002:4002"
+
+    environment:
+      - SPRING_APLLICATION_NAME= terra-notification-service
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
+      - REDIS_URL=redis://terra-redis:6379/0
+    networks:
+      - terra-network  
+
+#RabbitMq service
+  terra-rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - terra-rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - terra-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
 
 networks:
   terra-network:

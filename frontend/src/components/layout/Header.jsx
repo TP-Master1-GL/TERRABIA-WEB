@@ -9,7 +9,7 @@ import {
   XMarkIcon 
 } from '@heroicons/react/24/outline';
 import ProfileModal from '../ProfileModal';
-import logo from '../../assets/terrabia-logo.png'; // <== Mets ici le chemin vers ton logo
+import logo from '../../assets/terra.png'; // <== Mets ici le chemin vers ton logo
 
 const Header = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -20,7 +20,7 @@ const Header = () => {
   const navigation = [
     { name: 'Accueil', href: '/', current: location.pathname === '/' },
     { name: 'Marché', href: '/marketplace', current: location.pathname === '/marketplace' },
-    { name: 'Agriculteurs', href: '/farmers', current: location.pathname === '/farmers' },
+    // { name: 'Agriculteurs', href: '/farmers', current: location.pathname === '/farmers' },
   ];
 
   const userNavigation = user ? [
@@ -41,14 +41,13 @@ const Header = () => {
             {/* Logo + Navigation principale */}
             <div className="flex items-center">
               <Link to="/" className="flex-shrink-0 flex items-center">
-                {/* ==== LOGO TERRABIA ==== */}
-                <img
+              
+                <span className="text-xl font-extrabold text-gray-900 tracking-wide">
+                  <img
                   src={logo}
                   alt="Terrabia Logo"
-                  className="h-10 w-auto mr-2"
+                  className="h-40 w-auto mr-2"
                 />
-                <span className="text-xl font-extrabold text-gray-900 tracking-wide">
-                  TERRABIA
                 </span>
               </Link>
 

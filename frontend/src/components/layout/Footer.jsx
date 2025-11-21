@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import logo from '../../assets/terra.png';
 
 const Footer = () => {
   return (
@@ -8,10 +9,11 @@ const Footer = () => {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8 xl:col-span-1">
             <Link to="/" className="flex items-center">
-              <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">T</span>
-              </div>
-              <span className="ml-2 text-xl font-bold text-gray-900">TERRABIA</span>
+              <span className="ml-2 text-xl font-bold text-gray-900"> <img
+                                src={logo}
+                                alt="Terrabia Logo"
+                                className="h-40 w-auto mr-3"
+                              /></span>
             </Link>
             <p className="text-gray-500 text-base">
               Connectons les agriculteurs camerounais aux consommateurs pour une agriculture durable et prospère.

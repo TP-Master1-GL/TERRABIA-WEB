@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
+import logo1 from '../assets/terrabia-logo.png';
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -59,8 +59,12 @@ const Home = () => {
           <div className={`transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
             {/* Animated Logo/Badge */}
             <div className="floating mb-8 inline-block">
-              <div className="w-24 h-24 mx-auto bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-2xl pulse-glow">
-                <span className="text-3xl text-white">🌱</span>
+              <div className="w-24 h-24 mx-auto bg-gradient-to-br from-green-600 to-green-600 rounded-2xl flex items-center justify-center shadow-2xl pulse-glow">
+                <span className="text-3xl text-white">  <img
+                                  src={logo1}
+                                  alt="Terrabia Logo"
+                                  className="h-50 w-auto mr-2"
+                                /></span>
               </div>
             </div>
 

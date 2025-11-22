@@ -5,7 +5,11 @@ from .config import get_config
 CONFIG = None
 
 def get_app_config():
+    """
+    Retourne la configuration du service.
+    Appelle le Config Server **une seule fois** et stocke le résultat globalement.
+    """
     global CONFIG
     if CONFIG is None:
-        CONFIG = get_config()  # Appelle le Config Server **une seule fois**
+        CONFIG = get_config()  # Appel initial au Config Server
     return CONFIG

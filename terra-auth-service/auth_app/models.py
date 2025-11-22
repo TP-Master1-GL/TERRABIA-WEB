@@ -13,7 +13,7 @@ class User(models.Model):
         choices=[
             ('acheteur', 'Acheteur'),
             ('vendeur', 'Vendeur'),
-            ('admin', 'Administrateur'),
+            ('entreprise_livraison', 'Entreprise de Livraison'),
         ]
     )
     is_active = models.BooleanField(default=True)

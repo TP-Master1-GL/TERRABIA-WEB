@@ -1,3 +1,4 @@
+# /auth_app/rabbitmq_consommer.py
 import json
 import pika
 import os
@@ -6,19 +7,20 @@ import logging
 import time
 from django.db import transaction
 from django.apps import apps
+from dotenv import load_dotenv
 from .config import get_config
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "auth_service.settings")
-# django.setup()
+# Chargement du .env
+load_dotenv()
 
-
-# === CHARGEMENT CONFIGURATION DYNAMIQUE ===
+# === CHARGEMENT CONFIG RABBITMQ ===
 def get_rabbitmq_settings():
-    """Récupère la configuration RabbitMQ depuis le config service ou utilise un fallback."""
+    """Récupère la configuration RabbitMQ via env ou config-service."""
     config = get_config()
+
     return {
         "host": config.get("rabbitmq.host", os.getenv("RABBITMQ_HOST", "localhost")),
         "port": int(config.get("rabbitmq.port", os.getenv("RABBITMQ_PORT", 5672))),
@@ -73,7 +75,6 @@ def handle_email_verified(payload):
         user.save()
 
 
-# === TABLE DE ROUTAGE ===
 EVENT_HANDLERS = {
     "user_created": handle_user_created,
     "user_updated": handle_user_updated,
@@ -90,6 +91,7 @@ def start_consumer():
     while True:
         try:
             logger.info(f"[RabbitMQ] Connexion à {settings['host']}:{settings['port']} ...")
+
             credentials = pika.PlainCredentials(settings["user"], settings["password"])
             connection = pika.BlockingConnection(
                 pika.ConnectionParameters(
@@ -100,9 +102,9 @@ def start_consumer():
                     blocked_connection_timeout=300,
                 )
             )
+
             channel = connection.channel()
 
-            # Déclaration de l’exchange et de la queue (fanout pour diffusion globale)
             channel.exchange_declare(exchange=settings["exchange"], exchange_type="fanout", durable=True)
             channel.queue_declare(queue=settings["queue"], durable=True)
             channel.queue_bind(exchange=settings["exchange"], queue=settings["queue"])
@@ -131,5 +133,5 @@ def start_consumer():
             channel.start_consuming()
 
         except Exception as e:
-            logger.error(f"[RabbitMQ] ❌ Connexion échouée : {e}. Nouvelle tentative dans 10s...")
-            time.sleep(10)
+            logger.error(f"[RabbitMQ] ❌ Connexion échouée : {e}. Nouvelle tentative dans 1s...")
+            time.sleep(1)

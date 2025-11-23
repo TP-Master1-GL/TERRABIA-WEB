@@ -7,9 +7,8 @@ import { startConsumer } from './events/consumer.js';
 import {startodercreationconsumer} from './events/consumeordercreation.js';
 import { initializeConfig } from './config/index.js';
 import Notification from './models/Notification.js';
-import UserCreated from './routes/usercreated.Routes.js';
-import ordercreated from './routes/ordercreated.Routes.js';
-//import eurekaClient from './services/eurekaClient.js';
+import rabbitmqRoutes from './routes/rabbitmqRoutes.js';
+import eurekaClient from './services/eurekaClient.js';
 
 (async () => {
   try {

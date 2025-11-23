@@ -1,7 +1,7 @@
 import express from 'express';
 import {
   consumeUserCreatedMessage,
-} from '../controllers/rabbitmq.controller.js';
+} from '../controllers/user.created.controller.js';
 
 const router = express.Router();
 

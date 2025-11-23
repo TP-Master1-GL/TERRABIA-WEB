@@ -4,10 +4,12 @@ import express from 'express';
 import { connectDB } from './database/index.js';
 import { connectRabbitMQ } from './events/rabbitmq.js';
 import { startConsumer } from './events/consumer.js';
+import {startodercreationconsumer} from './events/consumeordercreation.js';
 import { initializeConfig } from './config/index.js';
 import Notification from './models/Notification.js';
-import rabbitmqRoutes from './routes/rabbitmqRoutes.js';
-import eurekaClient from './services/eurekaClient.js';
+import UserCreated from './routes/usercreated.Routes.js';
+import ordercreated from './routes/ordercreated.Routes.js';
+//import eurekaClient from './services/eurekaClient.js';
 
 (async () => {
   try {
@@ -35,7 +37,8 @@ import eurekaClient from './services/eurekaClient.js';
     });
 
     // Routes RabbitMQ
-    app.use('/api', rabbitmqRoutes);
+    app.use('/api', UserCreated);
+    app.use('/api',ordercreated )
     
     // Health check
     app.get('/health', (req, res) => {
@@ -59,19 +62,23 @@ import eurekaClient from './services/eurekaClient.js';
     await connectRabbitMQ();
     console.log('startup: connected to RabbitMQ');
 
-    console.log('startup: starting consumer...');
+    console.log('startup: starting userconsumer...');
     await startConsumer();
+
+    console.log('startup: starting orderconsumer...');
+    await startodercreationconsumer();
     console.log('startup: consumer started');
 
     app.listen(config.port, () => {
       console.log(`🚀 Notification Service running on port ${config.port}`);
-      console.log('startup: registering with Eureka...');
-      eurekaClient.start();
+     console.log('startup: registering with Eureka...');
+    eurekaClient.start();
       
       console.log(`📡 Endpoints disponibles:`);
       console.log(`   GET  / - Service info`);
       console.log(`   GET  /health - Health check`);
       console.log(`   POST /api/consume/user-created - Consommer un message RabbitMQ`);
+      console.log('POST /api/consume/order-created - Consommer un message RabbitMQ')
     });
 
     // Gestion propre de l'arrêt

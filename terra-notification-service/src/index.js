@@ -7,7 +7,12 @@ import { startConsumer } from './events/consumer.js';
 import {startodercreationconsumer} from './events/consumeordercreation.js';
 import { initializeConfig } from './config/index.js';
 import Notification from './models/Notification.js';
-import rabbitmqRoutes from './routes/rabbitmqRoutes.js';
+
+import UserCreated from './routes/usercreated.Routes.js';
+import ordercreated from './routes/ordercreated.Routes.js';
+import ordercompleted from './routes/ordercompleted.routes.js';
+
+import {startodercompletionconsumer} from './events/consumordercompletion.js';
 import eurekaClient from './services/eurekaClient.js';
 
 (async () => {
@@ -37,7 +42,8 @@ import eurekaClient from './services/eurekaClient.js';
 
     // Routes RabbitMQ
     app.use('/api', UserCreated);
-    app.use('/api',ordercreated )
+    app.use('/api',ordercreated );
+    app.use('/api', ordercompleted);
     
     // Health check
     app.get('/health', (req, res) => {
@@ -64,6 +70,9 @@ import eurekaClient from './services/eurekaClient.js';
     console.log('startup: starting userconsumer...');
     await startConsumer();
 
+    console.log('startup: starting ordercompletion consumer ...');
+    await startodercompletionconsumer();
+
     console.log('startup: starting orderconsumer...');
     await startodercreationconsumer();
     console.log('startup: consumer started');
@@ -81,7 +90,7 @@ import eurekaClient from './services/eurekaClient.js';
     });
 
     // Gestion propre de l'arrêt
-    process.on('SIGTERM', () => {
+      process.on('SIGTERM', () => {
       console.log('Shutting down gracefully...');
       eurekaClient.stop();
       process.exit(0);

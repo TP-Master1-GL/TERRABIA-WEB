@@ -1,7 +1,7 @@
-import { sendEmail } from '../services/mailer.service.js';
+import { sendEmail } from '../../services/mailer.service.js';
 
 
-export async function handleOrderCompleted(orderData, envelope) {
+export async function handleOrderCompleted(orderData) {
   const { order_id, order_number, buyer, farmer, total_amount } = orderData;
 
   console.log(`✅ Processing completion for order ${order_number}`);
@@ -19,4 +19,5 @@ export async function handleOrderCompleted(orderData, envelope) {
       }
     });
   }
+ 
 }

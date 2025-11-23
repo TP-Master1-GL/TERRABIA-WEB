@@ -7,6 +7,6 @@ const router = express.Router();
 
 // Routes pour interagir avec RabbitMQ
 
-router.post('/consume/user-created', consumeOrderCreatedMessage);
+router.post('/consume/order-created', consumeOrderCreatedMessage);
 
 export default router;

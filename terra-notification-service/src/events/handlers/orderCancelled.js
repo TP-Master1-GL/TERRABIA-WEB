@@ -1,6 +1,6 @@
-import { sendEmail } from '../services/mailer.service.js';
+import { sendEmail } from '../../services/mailer.service.js';
 
-export async function handleOrderCancelled(orderData, envelope) {
+export async function handleOrderCancelled(orderData) {
   const { order_id, order_number, buyer, farmer, cancellation_reason, items } = orderData;
 
   console.log(`❌ Processing cancellation for order ${order_number}`);

@@ -12,10 +12,12 @@ import UserCreated from './routes/usercreated.Routes.js';
 import ordercreated from './routes/ordercreated.Routes.js';
 import ordercompleted from './routes/ordercompleted.routes.js';
 import orderpaid from './routes/orderpaid.routes.js';
+import ordercancelled from './routes/order.cancelled.routes.js';
 
+import { startodercancelledconsumer } from './events/consumeordercamcelled.js';
 import { startoderpaidconsumer } from './events/consumeorderpaid.js';
 import {startodercompletionconsumer} from './events/consumordercompletion.js';
-//import eurekaClient from './services/eurekaClient.js';
+import eurekaClient from './services/eurekaClient.js';
 
 (async () => {
   try {
@@ -26,7 +28,7 @@ import {startodercompletionconsumer} from './events/consumordercompletion.js';
     const app = express();
     app.use(express.json());
 
-    // ⭐ AJOUTEZ CETTE ROUTE RACINE ⭐
+    // route pour tester que le service est en marche
     app.get('/', (req, res) => {
       res.json({
         service: 'Notification Service',
@@ -47,6 +49,7 @@ import {startodercompletionconsumer} from './events/consumordercompletion.js';
     app.use('/api',ordercreated );
     app.use('/api', ordercompleted);
     app.use('/api',orderpaid);
+    app.use('/api', ordercancelled);
     
     // Health check
     app.get('/health', (req, res) => {
@@ -76,6 +79,9 @@ import {startodercompletionconsumer} from './events/consumordercompletion.js';
     console.log('startup: starting ordercompletion consumer ...');
     await startodercompletionconsumer();
 
+ console.log('startup: starting order cancelled consumer ...');
+    await startodercancelledconsumer();
+
     console.log('startup: starting orderconsumer...');
     await startodercreationconsumer();
 
@@ -86,8 +92,8 @@ import {startodercompletionconsumer} from './events/consumordercompletion.js';
 
     app.listen(config.port, () => {
       console.log(`🚀 Notification Service running on port ${config.port}`);
-    /* console.log('startup: registering with Eureka...');
-    eurekaClient.start();*/
+    console.log('startup: registering with Eureka...');
+    eurekaClient.start();
       
       console.log(`📡 Endpoints disponibles:`);
       console.log(`   GET  / - Service info`);
@@ -96,11 +102,12 @@ import {startodercompletionconsumer} from './events/consumordercompletion.js';
       console.log('POST /api/consume/order-created - ');
       console.log('POST /api/consume/order-completed -');
       console.log('POST /api/consume/order-paid - ');
+      console.log('POST /api/consume/order-cancelled - ');
 
     });
 
     // Gestion propre de l'arrêt
-    /*  process.on('SIGTERM', () => {
+      process.on('SIGTERM', () => {
       console.log('Shutting down gracefully...');
       eurekaClient.stop();
       process.exit(0);
@@ -110,7 +117,7 @@ import {startodercompletionconsumer} from './events/consumordercompletion.js';
       console.log('Shutting down gracefully...');
       eurekaClient.stop();
       process.exit(0);
-    });*/
+    });
 
   } catch (err) {
     console.error('startup error:', err);

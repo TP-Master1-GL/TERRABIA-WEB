@@ -1,9 +1,9 @@
-import { sendEmail } from '../services/mailer.service.js';
-import { saveNotification } from '../services/notification.service.js';
+import { sendEmail } from '../../services/mailer.service.js';
+import { saveNotification } from '../../services/notification.service.js';
 
 
 
-export async function handleOrderPaid(orderData, envelope) {
+export async function handleOrderPaid(orderData) {
   const { order_id, order_number, buyer, farmer, total_amount, transaction } = orderData;
 
   console.log(`💰 Processing payment for order ${order_number}`);

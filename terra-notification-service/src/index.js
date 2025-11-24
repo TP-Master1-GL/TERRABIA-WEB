@@ -11,9 +11,11 @@ import Notification from './models/Notification.js';
 import UserCreated from './routes/usercreated.Routes.js';
 import ordercreated from './routes/ordercreated.Routes.js';
 import ordercompleted from './routes/ordercompleted.routes.js';
+import orderpaid from './routes/orderpaid.routes.js';
 
+import { startoderpaidconsumer } from './events/consumeorderpaid.js';
 import {startodercompletionconsumer} from './events/consumordercompletion.js';
-import eurekaClient from './services/eurekaClient.js';
+//import eurekaClient from './services/eurekaClient.js';
 
 (async () => {
   try {
@@ -44,6 +46,7 @@ import eurekaClient from './services/eurekaClient.js';
     app.use('/api', UserCreated);
     app.use('/api',ordercreated );
     app.use('/api', ordercompleted);
+    app.use('/api',orderpaid);
     
     // Health check
     app.get('/health', (req, res) => {
@@ -75,22 +78,29 @@ import eurekaClient from './services/eurekaClient.js';
 
     console.log('startup: starting orderconsumer...');
     await startodercreationconsumer();
+
+     console.log('startup: starting orderconsumer...');
+    await startoderpaidconsumer();
+
     console.log('startup: consumer started');
 
     app.listen(config.port, () => {
       console.log(`🚀 Notification Service running on port ${config.port}`);
-     console.log('startup: registering with Eureka...');
-    eurekaClient.start();
+    /* console.log('startup: registering with Eureka...');
+    eurekaClient.start();*/
       
       console.log(`📡 Endpoints disponibles:`);
       console.log(`   GET  / - Service info`);
       console.log(`   GET  /health - Health check`);
-      console.log(`   POST /api/consume/user-created - Consommer un message RabbitMQ`);
-      console.log('POST /api/consume/order-created - Consommer un message RabbitMQ')
+      console.log(`   POST /api/consume/user-created -`);
+      console.log('POST /api/consume/order-created - ');
+      console.log('POST /api/consume/order-completed -');
+      console.log('POST /api/consume/order-paid - ');
+
     });
 
     // Gestion propre de l'arrêt
-      process.on('SIGTERM', () => {
+    /*  process.on('SIGTERM', () => {
       console.log('Shutting down gracefully...');
       eurekaClient.stop();
       process.exit(0);
@@ -100,7 +110,7 @@ import eurekaClient from './services/eurekaClient.js';
       console.log('Shutting down gracefully...');
       eurekaClient.stop();
       process.exit(0);
-    });
+    });*/
 
   } catch (err) {
     console.error('startup error:', err);

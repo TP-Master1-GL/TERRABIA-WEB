@@ -437,3 +437,5 @@ INFO 2025-11-06 11:35:41,587 autoreload Watching for file changes with StatReloa
 INFO 2025-11-06 11:45:37,800 autoreload Watching for file changes with StatReloader
 INFO 2025-11-06 11:50:32,518 autoreload Watching for file changes with StatReloader
 INFO 2025-11-06 11:51:55,412 autoreload Watching for file changes with StatReloader
+INFO 2025-11-27 00:26:48,974 autoreload Watching for file changes with StatReloader
+INFO 2025-11-27 00:30:14,527 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.

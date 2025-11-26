@@ -1,3 +1,4 @@
+
 // src/models/Notification.js
 import { DataTypes } from "sequelize";
 import { sequelize } from "../database/index.js";

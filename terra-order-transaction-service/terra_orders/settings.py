@@ -71,7 +71,7 @@ def setup_configuration():
     
     # Si le port n'est pas trouvé dans la config, utiliser .env ou défaut
     if not server_port:
-        server_port = env.int('SERVICE_PORT', default=8000)
+        server_port = env.int('SERVICE_PORT', default=8086)
         print(f"🔍 DEBUG - Using fallback port: {server_port}")
     
     # Database configuration

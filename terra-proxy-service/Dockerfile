@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /tmp
 ADD target/terra-proxy-service.jar terra-proxy-service.jar

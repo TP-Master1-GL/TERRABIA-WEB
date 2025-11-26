@@ -1,40 +1,28 @@
 FROM python:3.11-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Pour éviter les prompts debconf
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Optimisation Python
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=terra_orders.settings
 
-# Create and set work directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    postgresql-dev \
+# Installer uniquement ce qui est nécessaire pour psycopg2-binary
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
+# Installation rapide sans cache
+# Mise à jour pip + timeout augmenté
+RUN pip install --upgrade pip --no-cache-dir \
+    && pip install --default-timeout=200 --retries=5 --no-cache-dir -r requirements.txt
+
+
 COPY . .
 
-# Create logs directory
-RUN mkdir -p /app/logs
-
-# Create entrypoint script
-RUN echo '#!/bin/bash\n\
-python manage.py migrate --noinput\n\
-python manage.py collectstatic --noinput\n\
-exec "$@"' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
-
-# Expose port
-EXPOSE 8000
-
-# Set entrypoint
-ENTRYPOINT ["/app/entrypoint.sh"]
-
-# Start server
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "terra_orders.wsgi:application"]
+CMD ["gunicorn", "terra_orders.wsgi:application", "--bind", "0.0.0.0:8086"]

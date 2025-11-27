@@ -455,3 +455,4 @@ WARNING 2025-11-27 00:37:35,793 basehttp "GET /favicon.ico HTTP/1.1" 404 3570
 INFO 2025-11-27 00:37:45,686 basehttp "GET /api/docs HTTP/1.1" 301 0
 INFO 2025-11-27 00:37:45,693 basehttp "GET /api/docs/ HTTP/1.1" 200 4677
 INFO 2025-11-27 00:37:56,023 basehttp "GET /api/schema/ HTTP/1.1" 200 52203
+INFO 2025-11-27 01:19:11,664 autoreload Watching for file changes with StatReloader

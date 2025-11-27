@@ -32,8 +32,10 @@ const FarmerDashboard = () => {
   });
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    if (user?.role === 'vendeur') {
+      fetchDashboardData();
+    }
+  }, [user]);
 
   const fetchDashboardData = async () => {
     try {
@@ -41,40 +43,48 @@ const FarmerDashboard = () => {
       
       // Récupération des produits de l'agriculteur
       const productsResponse = await productsAPI.getByFarmer(user.id);
-      const farmerProducts = productsResponse.data || [];
+      const farmerProducts = productsResponse.data.results || productsResponse.data || [];
       
       // Récupération des commandes récentes
-      const ordersResponse = await ordersAPI.getFarmerOrders();
-      const orders = ordersResponse.data || [];
+      const ordersResponse = await ordersAPI.getFarmerOrders({ limit: 5 });
+      const orders = ordersResponse.data.results || ordersResponse.data || [];
       
       // Récupération des statistiques
-      const analyticsResponse = await analyticsAPI.getFarmerAnalytics(user.id);
-      const analytics = analyticsResponse.data || {};
+      try {
+        const analyticsResponse = await analyticsAPI.getFarmerAnalytics(user.id);
+        setStats(analyticsResponse.data || calculateStats(farmerProducts, orders));
+      } catch (error) {
+        console.warn('Analytics service not available, calculating stats locally');
+        setStats(calculateStats(farmerProducts, orders));
+      }
       
       setProducts(farmerProducts.slice(0, 6));
       setRecentOrders(orders.slice(0, 5));
       
-      // Calcul des statistiques
-      const lowStockCount = farmerProducts.filter(p => p.stockQuantity < 10 && p.stockQuantity > 0).length;
-      const activeProducts = farmerProducts.filter(p => p.status === 'active' && p.stockQuantity > 0);
-      
-      setStats({
-        totalProducts: farmerProducts.length,
-        activeProducts: activeProducts.length,
-        totalSales: analytics.totalSales || farmerProducts.reduce((sum, p) => sum + (p.salesCount || 0), 0),
-        monthlyRevenue: analytics.monthlyRevenue || farmerProducts.reduce((sum, p) => sum + (p.revenue || 0), 0),
-        pendingOrders: orders.filter(o => o.status === 'pending' || o.status === 'confirmed').length,
-        averageRating: analytics.averageRating || 4.6,
-        lowStockItems: lowStockCount
-      });
-      
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      // Fallback avec des données mockées en cas d'erreur
       loadMockData();
     } finally {
       setLoading(false);
     }
+  };
+
+  const calculateStats = (products, orders) => {
+    const lowStockCount = products.filter(p => p.stock_quantity < 10 && p.stock_quantity > 0).length;
+    const activeProducts = products.filter(p => p.stock_quantity > 0);
+    const totalSales = products.reduce((sum, p) => sum + (p.sales_count || 0), 0);
+    const monthlyRevenue = products.reduce((sum, p) => sum + ((p.price || 0) * (p.sales_count || 0)), 0);
+    const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'confirmed').length;
+    
+    return {
+      totalProducts: products.length,
+      activeProducts: activeProducts.length,
+      totalSales: totalSales,
+      monthlyRevenue: monthlyRevenue,
+      pendingOrders: pendingOrders,
+      averageRating: 4.6, // À calculer à partir des reviews
+      lowStockItems: lowStockCount
+    };
   };
 
   const loadMockData = () => {
@@ -84,55 +94,49 @@ const FarmerDashboard = () => {
         name: 'Tomates fraîches',
         category: 'Légumes',
         price: 1500,
-        stockQuantity: 8,
-        status: 'active',
+        stock_quantity: 8,
         images: ['/api/placeholder/400/300'],
         rating: 4.5,
-        salesCount: 23,
-        revenue: 34500
+        sales_count: 23,
       },
       {
         id: 2,
         name: 'Bananes plantains',
         category: 'Fruits',
         price: 800,
-        stockQuantity: 25,
-        status: 'active',
+        stock_quantity: 25,
         images: ['/api/placeholder/400/300'],
         rating: 4.8,
-        salesCount: 15,
-        revenue: 12000
+        sales_count: 15,
       },
       {
         id: 3,
         name: 'Aubergines locales',
         category: 'Légumes',
         price: 900,
-        stockQuantity: 3,
-        status: 'active',
+        stock_quantity: 3,
         images: ['/api/placeholder/400/300'],
         rating: 4.6,
-        salesCount: 12,
-        revenue: 10800
+        sales_count: 12,
       }
     ];
 
     const mockOrders = [
       {
         id: 'CMD-001',
-        customerName: 'Alice Martin',
-        totalAmount: 4500,
+        customer_name: 'Alice Martin',
+        total_amount: 4500,
         status: 'pending',
-        itemsCount: 3,
-        createdAt: new Date().toISOString()
+        items_count: 3,
+        created_at: new Date().toISOString()
       },
       {
         id: 'CMD-002',
-        customerName: 'Paul Dubois',
-        totalAmount: 3200,
+        customer_name: 'Paul Dubois',
+        total_amount: 3200,
         status: 'confirmed',
-        itemsCount: 2,
-        createdAt: new Date(Date.now() - 86400000).toISOString()
+        items_count: 2,
+        created_at: new Date(Date.now() - 86400000).toISOString()
       }
     ];
 
@@ -141,7 +145,7 @@ const FarmerDashboard = () => {
     
     setStats({
       totalProducts: mockProducts.length,
-      activeProducts: mockProducts.filter(p => p.status === 'active').length,
+      activeProducts: mockProducts.filter(p => p.stock_quantity > 0).length,
       totalSales: 50,
       monthlyRevenue: 57300,
       pendingOrders: 2,
@@ -287,7 +291,7 @@ const FarmerDashboard = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Tableau de bord, {user?.name}
+                  Tableau de bord, {user?.name || user?.username}
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Aperçu de votre activité et performances commerciales
@@ -312,8 +316,18 @@ const FarmerDashboard = () => {
               className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl bg-${stat.color}-50`}>
-                  <stat.icon className={`h-6 w-6 text-${stat.color}-600`} />
+                <div className={`p-3 rounded-xl ${
+                  stat.color === 'green' ? 'bg-green-50' :
+                  stat.color === 'blue' ? 'bg-blue-50' :
+                  stat.color === 'emerald' ? 'bg-emerald-50' :
+                  stat.color === 'orange' ? 'bg-orange-50' : 'bg-gray-50'
+                }`}>
+                  <stat.icon className={`h-6 w-6 ${
+                    stat.color === 'green' ? 'text-green-600' :
+                    stat.color === 'blue' ? 'text-blue-600' :
+                    stat.color === 'emerald' ? 'text-emerald-600' :
+                    stat.color === 'orange' ? 'text-orange-600' : 'text-gray-600'
+                  }`} />
                 </div>
                 {stat.total && (
                   <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
@@ -382,10 +396,10 @@ const FarmerDashboard = () => {
                       <span>{product.category}</span>
                       <span>•</span>
                       <span className={`font-medium ${
-                        product.stockQuantity < 5 ? 'text-red-600' : 
-                        product.stockQuantity < 10 ? 'text-orange-600' : 'text-green-600'
+                        product.stock_quantity < 5 ? 'text-red-600' : 
+                        product.stock_quantity < 10 ? 'text-orange-600' : 'text-green-600'
                       }`}>
-                        {product.stockQuantity} en stock
+                        {product.stock_quantity} en stock
                       </span>
                     </div>
                   </div>
@@ -395,7 +409,7 @@ const FarmerDashboard = () => {
                     </div>
                     <div className="flex items-center text-sm text-gray-500">
                       <StarIcon className="h-3 w-3 text-yellow-400 fill-current mr-1" />
-                      {product.rating}
+                      {product.rating || 'N/A'}
                     </div>
                   </div>
                 </div>
@@ -442,13 +456,13 @@ const FarmerDashboard = () => {
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>{order.customerName}</span>
+                    <span>{order.customer_name || 'Client'}</span>
                     <span className="font-semibold text-gray-900">
-                      {order.totalAmount?.toLocaleString()} FCFA
+                      {order.total_amount?.toLocaleString()} FCFA
                     </span>
                   </div>
                   <div className="text-xs text-gray-500 mt-2">
-                    {new Date(order.createdAt).toLocaleDateString('fr-FR')}
+                    {new Date(order.created_at).toLocaleDateString('fr-FR')}
                   </div>
                 </div>
               ))}

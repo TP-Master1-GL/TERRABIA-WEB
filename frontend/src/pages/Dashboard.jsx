@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { ordersAPI, analyticsAPI } from '../services/api';
 import {
   ChartBarIcon,
   ShoppingBagIcon,
@@ -14,18 +15,70 @@ import {
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [stats, setStats] = useState({});
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Rediriger les agriculteurs vers leur dashboard dédié
-  React.useEffect(() => {
-    if (user?.role === 'farmer') {
+  useEffect(() => {
+    if (user?.role === 'vendeur') {
       navigate('/farmer/dashboard');
+    } else {
+      fetchDashboardData();
     }
   }, [user, navigate]);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Récupération des commandes récentes
+      let ordersResponse;
+      if (user?.role === 'entreprise_livraison') {
+        ordersResponse = await ordersAPI.getAll({ limit: 3 });
+      } else {
+        ordersResponse = await ordersAPI.getBuyerOrders({ limit: 3 });
+      }
+      setRecentOrders(ordersResponse.data.results || ordersResponse.data || []);
+
+      // Récupération des statistiques
+      try {
+        const analyticsResponse = await analyticsAPI.getDashboardStats();
+        setStats(analyticsResponse.data || {});
+      } catch (error) {
+        console.warn('Analytics service not available, using default stats');
+        setStats(getDefaultStats());
+      }
+
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setStats(getDefaultStats());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDefaultStats = () => {
+    if (user?.role === 'entreprise_livraison') {
+      return {
+        totalDeliveries: 45,
+        activeDeliveries: 3,
+        totalRevenue: 280000,
+        satisfactionRate: 4.9
+      };
+    } else {
+      return {
+        totalOrders: 12,
+        pendingOrders: 2,
+        totalSpent: 125000,
+        favoriteFarmers: 8
+      };
+    }
+  };
 
   const buyerStats = [
     { 
       name: 'Commandes passées', 
-      value: '12', 
+      value: stats.totalOrders || '0', 
       icon: ShoppingBagIcon, 
       change: '+3', 
       changeType: 'positive',
@@ -33,7 +86,7 @@ const Dashboard = () => {
     },
     { 
       name: 'En cours', 
-      value: '2', 
+      value: stats.pendingOrders || '0', 
       icon: TruckIcon, 
       change: '-1', 
       changeType: 'negative',
@@ -41,7 +94,7 @@ const Dashboard = () => {
     },
     { 
       name: 'Dépenses totales', 
-      value: '125,000 FCFA', 
+      value: `${(stats.totalSpent || 0).toLocaleString()} FCFA`, 
       icon: CurrencyDollarIcon, 
       change: '+25%', 
       changeType: 'positive',
@@ -49,7 +102,7 @@ const Dashboard = () => {
     },
     { 
       name: 'Agriculteurs suivis', 
-      value: '8', 
+      value: stats.favoriteFarmers || '0', 
       icon: UserGroupIcon, 
       change: '+2', 
       changeType: 'positive',
@@ -60,7 +113,7 @@ const Dashboard = () => {
   const driverStats = [
     { 
       name: 'Livraisons ce mois', 
-      value: '45', 
+      value: stats.totalDeliveries || '0', 
       icon: TruckIcon, 
       change: '+8', 
       changeType: 'positive',
@@ -68,7 +121,7 @@ const Dashboard = () => {
     },
     { 
       name: 'En cours', 
-      value: '3', 
+      value: stats.activeDeliveries || '0', 
       icon: ShoppingBagIcon, 
       change: '+1', 
       changeType: 'positive',
@@ -76,7 +129,7 @@ const Dashboard = () => {
     },
     { 
       name: 'Revenus totaux', 
-      value: '280,000 FCFA', 
+      value: `${(stats.totalRevenue || 0).toLocaleString()} FCFA`, 
       icon: CurrencyDollarIcon, 
       change: '+15%', 
       changeType: 'positive',
@@ -84,7 +137,7 @@ const Dashboard = () => {
     },
     { 
       name: 'Satisfaction', 
-      value: '4.9/5', 
+      value: `${stats.satisfactionRate || '0'}/5`, 
       icon: StarIcon, 
       change: '+0.1', 
       changeType: 'positive',
@@ -94,7 +147,7 @@ const Dashboard = () => {
 
   const getStats = () => {
     switch (user?.role) {
-      case 'driver':
+      case 'entreprise_livraison':
         return driverStats;
       default:
         return buyerStats;
@@ -103,7 +156,7 @@ const Dashboard = () => {
 
   const getQuickActions = () => {
     switch (user?.role) {
-      case 'driver':
+      case 'entreprise_livraison':
         return [
           { 
             name: 'Nouvelles livraisons', 
@@ -154,19 +207,13 @@ const Dashboard = () => {
     }
   };
 
-  const recentOrders = [
-    { id: 1, product: 'Tomates fraîches', farmer: 'Jean Agriculteur', status: 'Livré', amount: '4,500 FCFA', date: '2024-01-15' },
-    { id: 2, product: 'Bananes plantains', farmer: 'Marie Fermière', status: 'En cours', amount: '2,400 FCFA', date: '2024-01-14' },
-    { id: 3, product: 'Pommes de terre', farmer: 'Pierre Cultivateur', status: 'Livré', amount: '3,600 FCFA', date: '2024-01-12' },
-  ];
-
   const upcomingDeliveries = [
     { id: 1, client: 'Alice Martin', address: 'Douala, Bonamoussadi', time: '14:00', products: ['Tomates', 'Oignons'] },
     { id: 2, client: 'Paul Dubois', address: 'Yaoundé, Bastos', time: '16:30', products: ['Bananes', 'Manioc'] },
     { id: 3, client: 'Sophie Ngo', address: 'Douala, Akwa', time: '18:00', products: ['Légumes variés'] },
   ];
 
-  const stats = getStats();
+  const statsData = getStats();
   const quickActions = getQuickActions();
 
   const renderDriverDashboard = () => (
@@ -263,20 +310,29 @@ const Dashboard = () => {
                   <ShoppingBagIcon className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">{order.product}</h3>
-                  <p className="text-sm text-gray-500">par {order.farmer}</p>
+                  <h3 className="font-semibold text-gray-900">
+                    {order.product || `Commande #${order.id}`}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {order.farmer_name || order.farmer?.name || 'Agriculteur'}
+                  </p>
                 </div>
               </div>
               <div className="text-right">
                 <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
-                  order.status === 'Livré' ? 'bg-green-100 text-green-800' :
-                  order.status === 'En cours' ? 'bg-yellow-100 text-yellow-800' :
+                  order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                  order.status === 'shipped' ? 'bg-yellow-100 text-yellow-800' :
                   'bg-blue-100 text-blue-800'
                 }`}>
-                  {order.status}
+                  {order.status === 'delivered' ? 'Livré' : 
+                   order.status === 'shipped' ? 'Expédié' : 'En cours'}
                 </span>
-                <p className="text-lg font-black text-gray-900 mt-1">{order.amount}</p>
-                <p className="text-sm text-gray-500">{order.date}</p>
+                <p className="text-lg font-black text-gray-900 mt-1">
+                  {order.total_amount?.toLocaleString()} FCFA
+                </p>
+                <p className="text-sm text-gray-500">
+                  {new Date(order.created_at || order.createdAt).toLocaleDateString('fr-FR')}
+                </p>
               </div>
             </div>
           ))}
@@ -308,6 +364,32 @@ const Dashboard = () => {
     </div>
   );
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="animate-pulse space-y-8">
+            {/* En-tête */}
+            <div className="flex items-center justify-center mb-8">
+              <div className="w-16 h-16 bg-gray-200 rounded-2xl"></div>
+            </div>
+            
+            {/* Statistiques */}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl p-6">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-full"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -315,24 +397,24 @@ const Dashboard = () => {
         <div className="mb-8 text-center animate-fade-in-down">
           <div className="flex items-center justify-center mb-4">
             <div className={`w-16 h-16 bg-gradient-to-r ${
-              user?.role === 'driver' ? 'from-green-500 to-emerald-600' : 'from-blue-500 to-cyan-600'
+              user?.role === 'entreprise_livraison' ? 'from-green-500 to-emerald-600' : 'from-blue-500 to-cyan-600'
             } rounded-2xl flex items-center justify-center shadow-2xl`}>
               <span className="text-2xl text-white">
-                {user?.role === 'driver' ? '🚚' : '🛒'}
+                {user?.role === 'entreprise_livraison' ? '🚚' : '🛒'}
               </span>
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-2">
-            Bonjour, <span className="gradient-text">{user?.name}</span>
+            Bonjour, <span className="gradient-text">{user?.name || user?.username}</span>
           </h1>
           <p className="text-xl text-gray-600">
-            Bienvenue sur votre tableau de bord {user?.role === 'driver' ? 'livreur' : 'acheteur'}
+            Bienvenue sur votre tableau de bord {user?.role === 'entreprise_livraison' ? 'livreur' : 'acheteur'}
           </p>
         </div>
 
         {/* Statistiques avec design amélioré */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          {stats.map((item, index) => (
+          {statsData.map((item, index) => (
             <div
               key={item.name}
               className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 transform hover:scale-105 transition-all duration-300 animate-fade-in-up border border-white/20"
@@ -411,7 +493,7 @@ const Dashboard = () => {
         </div>
 
         {/* Contenu spécifique au rôle */}
-        {user?.role === 'driver' ? renderDriverDashboard() : renderBuyerDashboard()}
+        {user?.role === 'entreprise_livraison' ? renderDriverDashboard() : renderBuyerDashboard()}
       </div>
     </div>
   );

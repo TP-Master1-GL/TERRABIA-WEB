@@ -1,16 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { usersAPI } from '../services/api';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || '',
+    name: user?.name || user?.username || '',
     email: user?.email || '',
-    phone: user?.phone || '',
-    location: user?.location || '',
+    phone: user?.phone_number || '',
+    location: user?.address || '',
     bio: user?.bio || '',
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || user.username || '',
+        email: user.email || '',
+        phone: user.phone_number || '',
+        location: user.address || '',
+        bio: user.bio || '',
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     setFormData({
@@ -19,21 +33,35 @@ const Profile = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Logique de mise à jour du profil
-    setIsEditing(false);
+    setLoading(true);
+    
+    try {
+      const result = await updateProfile(formData);
+      if (result.success) {
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getRoleDisplay = (role) => {
     const roles = {
-      farmer: 'Agriculteur',
-      buyer: 'Acheteur',
-      driver: 'Livreur',
+      vendeur: 'Agriculteur',
+      acheteur: 'Acheteur',
+      entreprise_livraison: 'Livreur',
       admin: 'Administrateur'
     };
     return roles[role] || role;
   };
+
+  if (!user) {
+    return <div>Chargement...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -51,7 +79,8 @@ const Profile = () => {
               </div>
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                disabled={loading}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               >
                 {isEditing ? 'Annuler' : 'Modifier'}
               </button>
@@ -64,11 +93,11 @@ const Profile = () => {
                 {/* Photo de profil */}
                 <div className="sm:col-span-2">
                   <div className="flex items-center">
-                    <div className="h-16 w-16 rounded-full bg-primary-500 flex items-center justify-center text-white text-xl font-bold">
-                      {user?.name?.charAt(0).toUpperCase()}
+                    <div className="h-16 w-16 rounded-full bg-green-500 flex items-center justify-center text-white text-xl font-bold">
+                      {user?.name?.charAt(0)?.toUpperCase() || user?.username?.charAt(0)?.toUpperCase()}
                     </div>
                     <div className="ml-4">
-                      <h4 className="text-lg font-medium text-gray-900">{user?.name}</h4>
+                      <h4 className="text-lg font-medium text-gray-900">{user?.name || user?.username}</h4>
                       <p className="text-sm text-gray-500">{getRoleDisplay(user?.role)}</p>
                     </div>
                   </div>
@@ -86,10 +115,10 @@ const Profile = () => {
                       id="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                     />
                   ) : (
-                    <p className="mt-1 text-sm text-gray-900">{user?.name}</p>
+                    <p className="mt-1 text-sm text-gray-900">{user?.name || user?.username}</p>
                   )}
                 </div>
 
@@ -105,7 +134,7 @@ const Profile = () => {
                       id="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                     />
                   ) : (
                     <p className="mt-1 text-sm text-gray-900">{user?.email}</p>
@@ -124,10 +153,10 @@ const Profile = () => {
                       id="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                     />
                   ) : (
-                    <p className="mt-1 text-sm text-gray-900">{user?.phone || 'Non renseigné'}</p>
+                    <p className="mt-1 text-sm text-gray-900">{user?.phone_number || 'Non renseigné'}</p>
                   )}
                 </div>
 
@@ -143,10 +172,10 @@ const Profile = () => {
                       id="location"
                       value={formData.location}
                       onChange={handleChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                     />
                   ) : (
-                    <p className="mt-1 text-sm text-gray-900">{user?.location || 'Non renseigné'}</p>
+                    <p className="mt-1 text-sm text-gray-900">{user?.address || 'Non renseigné'}</p>
                   )}
                 </div>
 
@@ -162,7 +191,7 @@ const Profile = () => {
                       rows={3}
                       value={formData.bio}
                       onChange={handleChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                       placeholder="Parlez-nous de vous..."
                     />
                   ) : (
@@ -171,27 +200,6 @@ const Profile = () => {
                     </p>
                   )}
                 </div>
-
-                {/* Statistiques */}
-                {!isEditing && (
-                  <div className="sm:col-span-2">
-                    <h4 className="text-sm font-medium text-gray-700 mb-3">Statistiques</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gray-50 rounded-lg p-4 text-center">
-                        <div className="text-2xl font-bold text-primary-600">
-                          {user?.role === 'farmer' ? '24' : user?.role === 'driver' ? '45' : '12'}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {user?.role === 'farmer' ? 'Produits' : user?.role === 'driver' ? 'Livraisons' : 'Commandes'}
-                        </div>
-                      </div>
-                      <div className="bg-gray-50 rounded-lg p-4 text-center">
-                        <div className="text-2xl font-bold text-primary-600">4.8</div>
-                        <div className="text-sm text-gray-500">Note moyenne</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -199,9 +207,10 @@ const Profile = () => {
               <div className="px-4 py-3 bg-gray-50 text-right sm:px-6 rounded-b-lg">
                 <button
                   type="submit"
-                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  disabled={loading}
+                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
                 >
-                  Sauvegarder
+                  {loading ? 'Sauvegarde...' : 'Sauvegarder'}
                 </button>
               </div>
             )}

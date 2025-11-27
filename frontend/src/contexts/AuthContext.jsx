@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
+import { authAPI, tokenService } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -14,29 +14,21 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('authToken'));
 
   useEffect(() => {
-    if (token) {
+    const token = tokenService.getToken();
+    if (token && tokenService.isValid()) {
       fetchProfile();
     } else {
       setLoading(false);
     }
-  }, [token]);
+  }, []);
 
   const fetchProfile = async () => {
     try {
-      // Simulation - À REMPLACER par votre vrai API
-      const mockUser = {
-        id: 1,
-        name: 'Test User',
-        email: 'test@terrabia.com',
-        role: 'buyer',
-        phone: '+237 6 XX XX XX XX',
-        location: 'Douala, Cameroun'
-      };
-      
-      setUser(mockUser);
+      const response = await authAPI.getProfile();
+      setUser(response.data);
+      localStorage.setItem('user', JSON.stringify(response.data));
     } catch (error) {
       console.error('Error fetching profile:', error);
       logout();
@@ -48,31 +40,25 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setLoading(true);
-      // Simulation d'une connexion réussie
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authAPI.login(credentials);
       
-      const mockUser = {
-        id: 1,
-        name: credentials.email.split('@')[0],
-        email: credentials.email,
-        role: credentials.email.includes('farmer') ? 'farmer' : 
-               credentials.email.includes('driver') ? 'driver' : 'buyer',
-        phone: '+237 6 XX XX XX XX',
-        location: 'Douala, Cameroun',
-        farmName: credentials.email.includes('farmer') ? 'Ma Ferme' : undefined
-      };
-
-      const mockToken = 'mock-jwt-token';
+      // Adaptation selon la structure de réponse de votre backend
+      const { accessToken, refreshToken, user: userData } = response.data;
       
-      localStorage.setItem('authToken', mockToken);
-      setToken(mockToken);
-      setUser(mockUser);
+      // Stockage des tokens
+      tokenService.setToken(accessToken);
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
       
-      return { success: true, user: mockUser };
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+      
+      return { success: true, user: userData };
     } catch (error) {
       return { 
         success: false, 
-        error: 'Erreur de connexion' 
+        error: error.message || 'Email ou mot de passe incorrect' 
       };
     } finally {
       setLoading(false);
@@ -82,55 +68,86 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setLoading(true);
-      // Simulation d'une inscription réussie
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const mockUser = {
-        id: Date.now(),
-        name: userData.name,
+      // Adaptation des données pour correspondre à votre backend
+      const registerData = {
         email: userData.email,
+        password: userData.password,
+        username: userData.name,
         role: userData.role,
-        phone: userData.phone,
-        location: userData.location,
-        bio: '',
-        farmName: userData.role === 'farmer' ? `Ferme de ${userData.name}` : undefined
+        phone_number: userData.phone,
+        address: userData.location
       };
-
-      const mockToken = 'mock-jwt-token';
       
-      localStorage.setItem('authToken', mockToken);
-      setToken(mockToken);
-      setUser(mockUser);
+      const response = await authAPI.register(registerData);
       
-      return { success: true, user: mockUser };
+      // Gestion de la réponse selon votre backend
+      const { access, refresh, user: newUser } = response.data;
+      
+      // Stockage des tokens
+      tokenService.setToken(access);
+      if (refresh) {
+        localStorage.setItem('refreshToken', refresh);
+      }
+      
+      setUser(newUser);
+      localStorage.setItem('user', JSON.stringify(newUser));
+      
+      return { success: true, user: newUser };
     } catch (error) {
       return { 
         success: false, 
-        error: "Erreur d'inscription" 
+        error: error.message || "Erreur d'inscription" 
       };
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('authToken');
-    setToken(null);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      tokenService.removeToken();
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      setUser(null);
+    }
   };
 
   const updateProfile = async (profileData) => {
     try {
-      setUser(prevUser => ({
-        ...prevUser,
-        ...profileData
-      }));
+      const response = await authAPI.updateProfile(profileData);
+      const updatedUser = { ...user, ...response.data };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       return { success: true };
     } catch (error) {
       return { 
         success: false, 
-        error: 'Erreur de mise à jour' 
+        error: error.message || 'Erreur de mise à jour' 
       };
+    }
+  };
+
+  const refreshToken = async () => {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (!refreshToken) {
+        logout();
+        return false;
+      }
+
+      const response = await authAPI.refreshToken(refreshToken);
+      const { accessToken, access } = response.data;
+      
+      tokenService.setToken(accessToken || access);
+      return true;
+    } catch (error) {
+      logout();
+      return false;
     }
   };
 
@@ -140,8 +157,9 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateProfile,
+    refreshToken,
     loading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user && tokenService.isValid(),
   };
 
   return (

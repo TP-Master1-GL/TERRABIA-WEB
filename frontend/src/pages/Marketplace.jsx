@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { productsAPI } from '../services/api';
+import { productsAPI, categoriesAPI } from '../services/api';
 import { 
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -12,10 +12,10 @@ import {
   HeartIcon,
   EyeIcon
 } from '@heroicons/react/24/outline';
-import { CardLoader } from '../components/common/LoadingSpinner';
 
 const Marketplace = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -24,30 +24,76 @@ const Marketplace = () => {
   const [priceRange, setPriceRange] = useState([0, 100000]);
   const [wishlist, setWishlist] = useState(new Set());
 
-  const categories = [
-    { name: 'Fruits', icon: '🍎', count: 24 },
-    { name: 'Légumes', icon: '🥦', count: 18 },
-    { name: 'Céréales', icon: '🌾', count: 12 },
-    { name: 'Tubercules', icon: '🥔', count: 8 },
-    { name: 'Épicerie', icon: '🫙', count: 15 },
-    { name: 'Boissons', icon: '🥤', count: 6 }
-  ];
-
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const response = await productsAPI.getAll();
-      setProducts(response.data);
+      setProducts(response.data.results || response.data || []);
     } catch (error) {
       console.error('Error fetching products:', error);
+      // Fallback avec des données mockées
+      setProducts(getMockProducts());
     } finally {
       setLoading(false);
     }
   };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await categoriesAPI.getAll();
+      setCategories(response.data.results || response.data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      setCategories(getMockCategories());
+    }
+  };
+
+  const getMockProducts = () => [
+    {
+      id: 1,
+      name: 'Tomates fraîches',
+      description: 'Tomates rouges et juteuses cultivées localement',
+      price: 1500,
+      category: 'Légumes',
+      unit: 'kg',
+      stock_quantity: 50,
+      farmer_name: 'Jean Agriculteur',
+      farmer_location: 'Yaoundé',
+      rating: 4.5,
+      review_count: 23,
+      images: ['/api/placeholder/400/300'],
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: 2,
+      name: 'Bananes plantains',
+      description: 'Bananes plantains mûres et savoureuses',
+      price: 800,
+      category: 'Fruits',
+      unit: 'régime',
+      stock_quantity: 25,
+      farmer_name: 'Marie Fermière',
+      farmer_location: 'Douala',
+      rating: 4.8,
+      review_count: 15,
+      images: ['/api/placeholder/400/300'],
+      created_at: new Date().toISOString(),
+    }
+  ];
+
+  const getMockCategories = () => [
+    { id: 1, name: 'Fruits', product_count: 24 },
+    { id: 2, name: 'Légumes', product_count: 18 },
+    { id: 3, name: 'Céréales', product_count: 12 },
+    { id: 4, name: 'Tubercules', product_count: 8 },
+    { id: 5, name: 'Épicerie', product_count: 15 },
+    { id: 6, name: 'Boissons', product_count: 6 }
+  ];
 
   const toggleWishlist = (productId) => {
     const newWishlist = new Set(wishlist);
@@ -63,7 +109,7 @@ const Marketplace = () => {
     .filter(product => 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.farmerName?.toLowerCase().includes(searchTerm.toLowerCase())
+      product.farmer_name?.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .filter(product => 
       selectedCategory ? product.category === selectedCategory : true
@@ -80,7 +126,7 @@ const Marketplace = () => {
         case 'rating':
           return (b.rating || 0) - (a.rating || 0);
         case 'newest':
-          return new Date(b.createdAt) - new Date(a.createdAt);
+          return new Date(b.created_at) - new Date(a.created_at);
         default:
           return a.name.localeCompare(b.name);
       }
@@ -93,7 +139,12 @@ const Marketplace = () => {
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-8 animate-pulse"></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <CardLoader key={i} />
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 h-48 rounded-2xl mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2 mb-4"></div>
+                <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+              </div>
             ))}
           </div>
         </div>
@@ -170,8 +221,8 @@ const Marketplace = () => {
                   >
                     <option value="">Toutes les catégories</option>
                     {categories.map(category => (
-                      <option key={category.name} value={category.name}>
-                        {category.name} ({category.count})
+                      <option key={category.id} value={category.name}>
+                        {category.name} ({category.product_count || 0})
                       </option>
                     ))}
                   </select>
@@ -243,7 +294,7 @@ const Marketplace = () => {
             </button>
             {categories.map(category => (
               <button
-                key={category.name}
+                key={category.id}
                 onClick={() => setSelectedCategory(category.name)}
                 className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === category.name
@@ -251,9 +302,15 @@ const Marketplace = () => {
                     : 'bg-white text-gray-700 border border-gray-300 hover:border-green-300'
                 }`}
               >
-                <span>{category.icon}</span>
+                <span>{
+                  category.name === 'Fruits' ? '🍎' :
+                  category.name === 'Légumes' ? '🥦' :
+                  category.name === 'Céréales' ? '🌾' :
+                  category.name === 'Tubercules' ? '🥔' :
+                  category.name === 'Épicerie' ? '🫙' : '🥤'
+                }</span>
                 {category.name}
-                <span className="text-xs opacity-75">({category.count})</span>
+                <span className="text-xs opacity-75">({category.product_count || 0})</span>
               </button>
             ))}
           </div>
@@ -314,9 +371,12 @@ const Marketplace = () => {
                   >
                     <HeartIcon className={`h-4 w-4 ${wishlist.has(product.id) ? 'fill-current' : ''}`} />
                   </button>
-                  <button className="p-2 rounded-full bg-white/90 text-gray-700 shadow-lg backdrop-blur-sm hover:bg-white transition-colors duration-200">
+                  <Link 
+                    to={`/product/${product.id}`}
+                    className="p-2 rounded-full bg-white/90 text-gray-700 shadow-lg backdrop-blur-sm hover:bg-white transition-colors duration-200"
+                  >
                     <EyeIcon className="h-4 w-4" />
-                  </button>
+                  </Link>
                 </div>
 
                 {/* Badges */}
@@ -324,7 +384,7 @@ const Marketplace = () => {
                   <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium backdrop-blur-sm">
                     {product.category}
                   </span>
-                  {product.stockQuantity < 10 && product.stockQuantity > 0 && (
+                  {product.stock_quantity < 10 && product.stock_quantity > 0 && (
                     <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-medium backdrop-blur-sm">
                       Stock limité
                     </span>
@@ -348,7 +408,7 @@ const Marketplace = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center text-sm text-gray-500">
                     <MapPinIcon className="h-4 w-4 mr-1 text-green-500" />
-                    <span className="truncate max-w-[120px]">{product.farmerLocation}</span>
+                    <span className="truncate max-w-[120px]">{product.farmer_location}</span>
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
                     <StarIcon className="h-4 w-4 mr-1 text-yellow-400" />
@@ -367,11 +427,12 @@ const Marketplace = () => {
                     </div>
                   </div>
 
-                  {product.stockQuantity > 0 ? (
+                  {product.stock_quantity > 0 ? (
                     <button
                       onClick={(e) => {
                         e.preventDefault();
                         // Ajouter au panier
+                        console.log('Added to cart:', product);
                       }}
                       className="bg-green-500 text-white p-2 rounded-xl hover:bg-green-600 transition-colors duration-200 shadow-sm hover:shadow-md"
                     >

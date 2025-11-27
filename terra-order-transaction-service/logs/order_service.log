@@ -439,3 +439,19 @@ INFO 2025-11-06 11:50:32,518 autoreload Watching for file changes with StatReloa
 INFO 2025-11-06 11:51:55,412 autoreload Watching for file changes with StatReloader
 INFO 2025-11-27 00:26:48,974 autoreload Watching for file changes with StatReloader
 INFO 2025-11-27 00:30:14,527 autoreload /home/john-nguembu/TERRABIA-WEB/terra-order-transaction-service/terra_orders/settings.py changed, reloading.
+INFO 2025-11-27 00:34:51,515 autoreload Watching for file changes with StatReloader
+INFO 2025-11-27 00:36:35,975 autoreload Watching for file changes with StatReloader
+INFO 2025-11-27 00:37:35,446 basehttp "GET /admin/ HTTP/1.1" 302 0
+INFO 2025-11-27 00:37:35,484 basehttp "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4259
+INFO 2025-11-27 00:37:35,675 basehttp "GET /static/admin/css/login.css HTTP/1.1" 200 958
+INFO 2025-11-27 00:37:35,677 basehttp "GET /static/admin/js/theme.js HTTP/1.1" 200 1943
+INFO 2025-11-27 00:37:35,677 basehttp "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2929
+INFO 2025-11-27 00:37:35,678 basehttp "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2694
+INFO 2025-11-27 00:37:35,679 basehttp "GET /static/admin/css/base.css HTTP/1.1" 200 21207
+INFO 2025-11-27 00:37:35,680 basehttp "GET /static/admin/css/responsive.css HTTP/1.1" 200 18533
+INFO 2025-11-27 00:37:35,692 basehttp "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+WARNING 2025-11-27 00:37:35,793 log Not Found: /favicon.ico
+WARNING 2025-11-27 00:37:35,793 basehttp "GET /favicon.ico HTTP/1.1" 404 3570
+INFO 2025-11-27 00:37:45,686 basehttp "GET /api/docs HTTP/1.1" 301 0
+INFO 2025-11-27 00:37:45,693 basehttp "GET /api/docs/ HTTP/1.1" 200 4677
+INFO 2025-11-27 00:37:56,023 basehttp "GET /api/schema/ HTTP/1.1" 200 52203

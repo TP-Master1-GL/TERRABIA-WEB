@@ -104,23 +104,29 @@ export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   register: (userData) => api.post('/auth/register', userData),
   logout: () => api.post('/auth/logout'),
-  refreshToken: () => api.post('/auth/refresh'),
+  refreshToken: (refreshToken) => api.post('/auth/refresh', { refreshToken }),
+  validateToken: () => api.get('/auth/validate'),
   getProfile: () => api.get('/auth/profile'),
-  updateProfile: (profileData) => api.put('/auth/profile', profileData),
-  changePassword: (passwordData) => api.put('/auth/password', passwordData),
-  verifyEmail: (token) => api.post('/auth/verify-email', { token }),
-  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
-  resetPassword: (resetData) => api.post('/auth/reset-password', resetData),
+  updateProfile: (profileData) => api.patch('/auth/profile', profileData),
+  verifyEmail: (token) => api.get(`/auth/verify-email/${token}`),
+  forgotPassword: (email) => api.post('/auth/password-reset-request', { email }),
+  resetPassword: (token, newPassword) => api.post(`/auth/password-reset-confirm/${token}`, { new_password: newPassword }),
 };
 
 // Services des utilisateurs (terra-users-service)
 export const usersAPI = {
-  getAll: (params = {}) => api.get('/users', { params }),
-  getById: (id) => api.get(`/users/${id}`),
-  updateUser: (id, userData) => api.put(`/users/${id}`, userData),
-  deleteUser: (id) => api.delete(`/users/${id}`),
-  getFarmers: (params = {}) => api.get('/users/farmers', { params }),
-  getDrivers: (params = {}) => api.get('/users/drivers', { params }),
+  getAll: (params = {}) => api.get('/users/users', { params }),
+  getById: (id) => api.get(`/users/users/${id}`),
+  createUser: (userData) => api.post('/users/users', userData),
+  updateUser: (id, userData) => api.put(`/users/users/${id}`, userData),
+  partialUpdateUser: (id, userData) => api.patch(`/users/users/${id}`, userData),
+  deleteUser: (id) => api.delete(`/users/users/${id}`),
+  
+  // Filtres par rôle
+  getFarmers: (params = {}) => api.get('/users/users', { params: { ...params, role: 'vendeur' } }),
+  getDrivers: (params = {}) => api.get('/users/users', { params: { ...params, role: 'entreprise_livraison' } }),
+  
+  // Préférences utilisateur (à adapter selon votre implémentation backend)
   updatePreferences: (preferences) => api.put('/users/preferences', preferences),
   uploadAvatar: (formData) => api.post('/users/avatar', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
@@ -130,147 +136,118 @@ export const usersAPI = {
 // Services des produits (terra-product-service)
 export const productsAPI = {
   // Opérations CRUD de base
-  getAll: (params = {}) => api.get('/products', { params }),
-  getById: (id) => api.get(`/products/${id}`),
-  create: (productData) => api.post('/products', productData),
-  update: (id, productData) => api.put(`/products/${id}`, productData),
-  delete: (id) => api.delete(`/products/${id}`),
+  getAll: (params = {}) => api.get('/products/produits', { params }),
+  getById: (id) => api.get(`/products/produits/${id}`),
+  create: (productData) => api.post('/products/produits', productData),
+  update: (id, productData) => api.put(`/products/produits/${id}`, productData),
+  partialUpdate: (id, productData) => api.patch(`/products/produits/${id}`, productData),
+  delete: (id) => api.delete(`/products/produits/${id}`),
   
   // Recherche et filtres
-  search: (query, params = {}) => api.get('/products/search', { 
+  search: (query, params = {}) => api.get('/products/produits/recherche', { 
     params: { q: query, ...params } 
   }),
-  getByCategory: (category, params = {}) => api.get(`/products/category/${category}`, { params }),
-  getByFarmer: (farmerId, params = {}) => api.get(`/products/farmer/${farmerId}`, { params }),
-  
-  // Gestion des stocks
-  updateStock: (id, stockData) => api.patch(`/products/${id}/stock`, stockData),
-  getLowStock: (threshold = 10) => api.get('/products/stock/low', { 
-    params: { threshold } 
+  getByCategory: (categoryId, params = {}) => api.get(`/products/categories/${categoryId}/products`, { params }),
+  getByFarmer: (farmerId, params = {}) => api.get('/products/produits', { 
+    params: { ...params, farmer: farmerId } 
   }),
   
-  // Images des produits
-  uploadImage: (productId, formData) => api.post(`/products/${productId}/images`, formData, {
+  // Gestion des catégories
+  getCategories: (params = {}) => api.get('/products/categories', { params }),
+  getCategoryById: (id) => api.get(`/products/categories/${id}`),
+  createCategory: (categoryData) => api.post('/products/categories', categoryData),
+  updateCategory: (id, categoryData) => api.put(`/products/categories/${id}`, categoryData),
+  deleteCategory: (id) => api.delete(`/products/categories/${id}`),
+  
+  // Gestion des médias
+  uploadMedia: (formData) => api.post('/products/medias', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
-  deleteImage: (productId, imageId) => api.delete(`/products/${productId}/images/${imageId}`),
+  getMedia: (mediaId) => api.get(`/products/medias/${mediaId}`),
+  updateMedia: (mediaId, mediaData) => api.put(`/products/medias/${mediaId}`, mediaData),
+  deleteMedia: (mediaId) => api.delete(`/products/medias/${mediaId}`),
   
-  // Avis et notations
-  getReviews: (productId, params = {}) => api.get(`/products/${productId}/reviews`, { params }),
-  addReview: (productId, reviewData) => api.post(`/products/${productId}/reviews`, reviewData),
-  updateReview: (productId, reviewId, reviewData) => api.put(`/products/${productId}/reviews/${reviewId}`, reviewData),
+  // Gestion des stocks (à adapter selon votre implémentation)
+  updateStock: (id, stockData) => api.patch(`/products/produits/${id}`, stockData),
   
-  // Statistiques (pour agriculteurs)
-  getProductStats: (productId) => api.get(`/products/${productId}/stats`),
-  getFarmerProductStats: (farmerId, params = {}) => api.get(`/products/farmer/${farmerId}/stats`, { params }),
+  // Avis et notations (à implémenter selon votre backend)
+  getReviews: (productId, params = {}) => api.get(`/products/produits/${productId}/reviews`, { params }),
+  addReview: (productId, reviewData) => api.post(`/products/produits/${productId}/reviews`, reviewData),
 };
 
 // Services des commandes et transactions (terra-order-transaction-service)
 export const ordersAPI = {
   // Commandes
-  getAll: (params = {}) => api.get('/orders', { params }),
-  getById: (id) => api.get(`/orders/${id}`),
-  create: (orderData) => api.post('/orders', orderData),
-  update: (id, orderData) => api.put(`/orders/${id}`, orderData),
-  cancel: (id, reason) => api.post(`/orders/${id}/cancel`, { reason }),
+  getAll: (params = {}) => api.get('/orders/orders', { params }),
+  getById: (id) => api.get(`/orders/orders/${id}`),
+  create: (orderData) => api.post('/orders/orders', orderData),
+  update: (id, orderData) => api.put(`/orders/orders/${id}`, orderData),
+  partialUpdate: (id, orderData) => api.patch(`/orders/orders/${id}`, orderData),
+  delete: (id) => api.delete(`/orders/orders/${id}`),
+  cancel: (id, reason) => api.post(`/orders/orders/${id}/cancel`, { reason }),
   
   // Commandes par utilisateur
-  getBuyerOrders: (params = {}) => api.get('/orders/buyer/me', { params }),
-  getFarmerOrders: (params = {}) => api.get('/orders/farmer/me', { params }),
-  getDriverOrders: (params = {}) => api.get('/orders/driver/me', { params }),
-  
-  // Statuts des commandes
-  updateStatus: (id, status, notes = '') => api.patch(`/orders/${id}/status`, { status, notes }),
-  getStatusHistory: (id) => api.get(`/orders/${id}/status-history`),
+  getBuyerOrders: (params = {}) => api.get('/orders/orders/buyer_orders', { params }),
+  getFarmerOrders: (params = {}) => api.get('/orders/orders/farmer_orders', { params }),
   
   // Paiements
-  initiatePayment: (orderId, paymentMethod) => api.post(`/orders/${orderId}/payment`, { paymentMethod }),
-  confirmPayment: (orderId, paymentData) => api.post(`/orders/${orderId}/payment/confirm`, paymentData),
-  getPaymentStatus: (orderId) => api.get(`/orders/${orderId}/payment/status`),
+  processPayment: (orderId, paymentData) => api.post(`/orders/orders/${orderId}/process_payment`, paymentData),
   
-  // Livraison
-  scheduleDelivery: (orderId, deliveryData) => api.post(`/orders/${orderId}/delivery`, deliveryData),
-  updateDelivery: (orderId, deliveryData) => api.put(`/orders/${id}/delivery`, deliveryData),
-  
-  // Statistiques
-  getOrderStats: (params = {}) => api.get('/orders/stats', { params }),
-  getRevenueStats: (params = {}) => api.get('/orders/revenue/stats', { params }),
+  // Transactions
+  getAllTransactions: (params = {}) => api.get('/orders/transactions', { params }),
+  getTransactionById: (id) => api.get(`/orders/transactions/${id}`),
+  createTransaction: (transactionData) => api.post('/orders/transactions', transactionData),
+  updateTransaction: (id, transactionData) => api.put(`/orders/transactions/${id}`, transactionData),
+  getUserTransactions: (params = {}) => api.get('/orders/transactions/user_transactions', { params }),
 };
 
 // Services de livraison (intégré dans terra-order-transaction-service)
 export const deliveryAPI = {
-  // Suivi
-  track: (orderId) => api.get(`/delivery/${orderId}/track`),
-  getActiveDeliveries: (params = {}) => api.get('/delivery/active', { params }),
+  // Webhooks de livraison
+  deliveryWebhook: (webhookData) => api.post('/orders/webhooks/delivery', webhookData),
+  paymentWebhook: (webhookData) => api.post('/orders/webhooks/payment', webhookData),
   
-  // Assignation des livreurs
-  assignDriver: (orderId, driverId) => api.post(`/delivery/${orderId}/assign`, { driverId }),
-  availableDrivers: (location) => api.get('/delivery/drivers/available', { 
-    params: { location } 
-  }),
-  
-  // Mise à jour du statut
-  updateStatus: (orderId, status, location = null) => api.patch(`/delivery/${orderId}/status`, { 
+  // Suivi (à adapter selon votre implémentation)
+  track: (orderId) => api.get(`/orders/delivery/${orderId}/track`),
+  updateStatus: (orderId, status, location = null) => api.patch(`/orders/orders/${orderId}`, { 
     status, 
     location 
   }),
-  updateLocation: (orderId, locationData) => api.post(`/delivery/${orderId}/location`, locationData),
-  
-  // Calcul d'itinéraire
-  calculateRoute: (points) => api.post('/delivery/route/calculate', { points }),
-  estimateDeliveryTime: (orderId) => api.get(`/delivery/${orderId}/estimate-time`),
-  
-  // Historique
-  getDeliveryHistory: (driverId, params = {}) => api.get(`/delivery/driver/${driverId}/history`, { params }),
 };
 
 // Services de notifications (terra-notification-service)
 export const notificationsAPI = {
-  // Notifications
-  getAll: (params = {}) => api.get('/notifications', { params }),
-  getUnread: () => api.get('/notifications/unread'),
-  markAsRead: (id) => api.patch(`/notifications/${id}/read`),
-  markAllAsRead: () => api.patch('/notifications/read-all'),
-  delete: (id) => api.delete(`/notifications/${id}`),
-  clearAll: () => api.delete('/notifications'),
+  // Endpoints de consommation (webhooks internes)
+  consumeUserCreated: (userData) => api.post('/notifications/consume/user-created', userData),
+  consumeOrderCreated: (orderData) => api.post('/notifications/consume/order-created', orderData),
+  consumeOrderCompleted: (orderData) => api.post('/notifications/consume/order-completed', orderData),
+  consumeOrderPaid: (orderData) => api.post('/notifications/consume/order-paid', orderData),
+  consumeOrderCancelled: (orderData) => api.post('/notifications/consume/order-cancelled', orderData),
   
-  // Préférences
-  getPreferences: () => api.get('/notifications/preferences'),
-  updatePreferences: (preferences) => api.put('/notifications/preferences', preferences),
-  
-  // Abonnements
-  subscribe: (subscriptionData) => api.post('/notifications/subscribe', subscriptionData),
-  unsubscribe: (token) => api.post('/notifications/unsubscribe', { token }),
-  
-  // Notifications push
-  sendTest: (notificationData) => api.post('/notifications/test', notificationData),
+  // Gestion des notifications (à implémenter selon votre backend)
+  getAll: (params = {}) => api.get('/notifications/notifications', { params }),
+  getUnread: () => api.get('/notifications/notifications/unread'),
+  markAsRead: (id) => api.patch(`/notifications/notifications/${id}/read`),
 };
 
-// Services des catégories
+// Services des catégories (déjà inclus dans productsAPI mais séparé pour compatibilité)
 export const categoriesAPI = {
-  getAll: (params = {}) => api.get('/categories', { params }),
-  getById: (id) => api.get(`/categories/${id}`),
-  create: (categoryData) => api.post('/categories', categoryData),
-  update: (id, categoryData) => api.put(`/categories/${id}`, categoryData),
-  delete: (id) => api.delete(`/categories/${id}`),
-  getProducts: (id, params = {}) => api.get(`/categories/${id}/products`, { params }),
+  getAll: (params = {}) => api.get('/products/categories', { params }),
+  getById: (id) => api.get(`/products/categories/${id}`),
+  create: (categoryData) => api.post('/products/categories', categoryData),
+  update: (id, categoryData) => api.put(`/products/categories/${id}`, categoryData),
+  delete: (id) => api.delete(`/products/categories/${id}`),
+  getProducts: (id, params = {}) => api.get(`/products/categories/${id}/products`, { params }),
 };
 
 // Services des statistiques et rapports
 export const analyticsAPI = {
-  // Tableau de bord
+  // Tableau de bord (à adapter selon votre implémentation)
   getDashboardStats: (params = {}) => api.get('/analytics/dashboard', { params }),
-  
-  // Statistiques agriculteur
-  getFarmerAnalytics: (farmerId, params = {}) => api.get(`/analytics/farmer/${farmerId}`, { params }),
-  
-  // Statistiques vendeur
   getSalesAnalytics: (params = {}) => api.get('/analytics/sales', { params }),
-  getProductAnalytics: (params = {}) => api.get('/analytics/products', { params }),
   
-  // Rapports
+  // Génération de rapports (à implémenter)
   generateReport: (reportData) => api.post('/analytics/reports', reportData),
-  getReport: (reportId) => api.get(`/analytics/reports/${reportId}`),
 };
 
 // Service de gestion des fichiers
@@ -286,9 +263,25 @@ export const filesAPI = {
   get: (fileId) => api.get(`/files/${fileId}`),
 };
 
+// Configuration et santé des services
+export const configAPI = {
+  eurekaRegister: (serviceData) => api.post('/config/eureka/register', serviceData),
+  eurekaUnregister: (serviceData) => api.post('/config/eureka/unregister', serviceData),
+  refreshConfig: () => api.post('/config/refresh'),
+};
+
+// Fonction utilitaire pour vérifier la santé des services
+export const healthCheck = {
+  checkAll: () => api.get('/health'),
+  checkAuth: () => api.get('/auth/health'),
+  checkProducts: () => api.get('/products/health'),
+  checkOrders: () => api.get('/orders/health'),
+  checkNotifications: () => api.get('/notifications/health'),
+  checkUsers: () => api.get('/users/health'),
+};
+
 // Utilitaires pour le mode démo/développement
 export const demoAPI = {
-  // Données mockées pour le développement
   getMockProducts: () => {
     const mockProducts = [
       {
@@ -307,20 +300,10 @@ export const demoAPI = {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       },
-      // ... autres produits mockés
     ];
     
     return Promise.resolve({ data: mockProducts });
   },
-};
-
-// Fonction utilitaire pour vérifier la santé des services
-export const healthCheck = {
-  checkAll: () => api.get('/health'),
-  checkAuth: () => api.get('/auth/health'),
-  checkProducts: () => api.get('/products/health'),
-  checkOrders: () => api.get('/orders/health'),
-  checkNotifications: () => api.get('/notifications/health'),
 };
 
 export default api;

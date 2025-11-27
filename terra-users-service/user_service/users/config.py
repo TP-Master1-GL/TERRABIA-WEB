@@ -56,7 +56,7 @@ def get_config(service_name="terra-users-service"):
 def get_fake_config():
     """Configuration factice pour les tests unitaires."""
     return {
-        "server.port": "8082",
+        "server.port": "8081",
         "eureka.client.serviceUrl.defaultZone": "http://localhost:8761/eureka/",
         "security.jwt.secret": "test-secret-users-2025",
     }

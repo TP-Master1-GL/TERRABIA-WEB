@@ -327,7 +327,7 @@ SERVICE_CONFIG = {
 # Microservices URLs
 MICROSERVICES = {
     'config_service': CONFIG_SERVICE_URL,
-    'eureka_service': env('EUREKA_SERVICE_URL', default='http://localhost:8761'),
+    'eureka_service': env('EUREKA_SERVICE_URL', default='http://terra-registry-service:8761'),
 }
 
 # RabbitMQ Configuration
@@ -443,7 +443,7 @@ def register_with_eureka():
     """
     Enregistre le service auprès d'Eureka avec retry et fallback
     """
-    eureka_url = env('EUREKA_SERVICE_URL', default='http://localhost:8761')
+    eureka_url = env('EUREKA_SERVICE_URL', default='http://terra-registry-service:8761')
     
     eureka_payload = {
         "instance": {

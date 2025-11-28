@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_APPLICATION_NAME= terra-conf-service
+      - SPRING_APPLICATION_NAME=terra-conf-service
       - SERVER_PORT=8080
       - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/TP-Master1-GL/TERRABIA-WEB.git
     networks:
@@ -22,7 +22,7 @@ services:
     ports:
       - "8761:8761"
     environment:
-      - SPRING_APPLICATION_NAME= terra-registry-service
+      - SPRING_APPLICATION_NAME=terra-registry-service
       - SPRING_CLOUD_CONFIG_URI=http://terra-conf-service:8080/
       - SPRING_CONFIG_IMPORT=configserver:http://terra-conf-service:8080/
     networks:
@@ -33,10 +33,11 @@ services:
     container_name: terra-proxy-service
     depends_on:
         - terra-conf-service
+        - terra-registry-service
     ports:
         - "8082:8082"
     environment:
-        - SPRING_APPLICATION_NAME= terra-proxy-service 
+        - SPRING_APPLICATION_NAME=terra-proxy-service 
         - SPRING_CLOUD_CONFIG_URI=http://terra-conf-service:8080/  
         - SPRING_CONFIG_IMPORT=configserver:http://terra-conf-service:8080/
         - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
@@ -53,7 +54,7 @@ services:
       - terra-network
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://terra-proxy-service:8082/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3

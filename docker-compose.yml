@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_APLLICATION_NAME= terra-conf-service
+      - SPRING_APPLICATION_NAME= terra-conf-service
       - SERVER_PORT=8080
       - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/TP-Master1-GL/TERRABIA-WEB.git
     networks:
@@ -36,18 +36,18 @@ services:
     ports:
         - "8082:8082"
     environment:
-        - SPRING_APPLICATION_NAME=terra-proxy-service 
+        - SPRING_APPLICATION_NAME= terra-proxy-service 
         - SPRING_CLOUD_CONFIG_URI=http://terra-conf-service:8080/  
         - SPRING_CONFIG_IMPORT=configserver:http://terra-conf-service:8080/
-        - EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE=http://terra-registry-service:8761/eureka/  
+        - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
         - EUREKA_CLIENT_ENABLED=true
-        # - EUREKA_INSTANCE_INSTANCE_ID=${spring.application.name}:${spring.application.instance_id:${random.value}}
         - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
         - EUREKA_INSTANCE_HOSTNAME=terra-proxy-service
         - EUREKA_CLIENT_FETCH_REGISTRY=true
         - EUREKA_CLIENT_REGISTER_WITH_EUREKA=true
         - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173
         - CORS_ALLOWED_METHODS=GET,POST,PUT,PATCH,DELETE,OPTIONS
+
 
     networks:
       - terra-network
@@ -93,17 +93,17 @@ services:
       - DEBUG=TRUE
       - SPRING_CLOUD_CONFIG_URI=http://terra-conf-service:8080/
       - SPRING_CONFIG_IMPORT=configserver:http://terra-conf-service:8080/
-      - EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE=http://terra-registry-service:8761/eureka/
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
       - EUREKA_SERVER=http://terra-registry-service:8761/eureka/
       - EUREKA_CLIENT_ENABLED=true
       - EUREKA_INSTANCE_PORT=8086
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - EUREKA_INSTANCE_HOSTNAME=terra-order-transaction-service
-      - EUREKA_CLIENT_FETCH_REGISTRY=true
-      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=true
+      - EUREKA_CLIENT_FETCH-REGISTRY=true
+      - EUREKA_CLIENT_REGISTER-WITH-EUREKA=true
       - SECRET_KEY=terra-order-secret-key-2024-change-in-production
       - DATABASE_URL=postgres://terra_user:terra_password@terra-postgres-db:5432/terra_orders_db
-      - EUREKA_SERVER_URL=http://terra-registry-service:8761/eureka/
+      - EUREKA_SERVER-URL_DEFAULT_ZONE=http://terra-registry-service:8761/eureka/
       - SERVICE_NAME=terra-order-transaction-service
       - SERVICE_PORT=8086
       - EUREKA_ENABLED=true
@@ -185,12 +185,12 @@ services:
       - DEBUG=TRUE
       - SPRING_CLOUD_CONFIG_URI=http://terra-conf-service:8080/
       - SPRING_CONFIG_IMPORT=configserver:http://terra-conf-service:8080/
-      - EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE=http://terra-registry-service:8761/eureka/
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
       - EUREKA_CLIENT_ENABLED=true
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - EUREKA_INSTANCE_HOSTNAME=terra-auth-service
-      - EUREKA_CLIENT_FETCH_REGISTRY=true
-      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=true
+      - EUREKA_CLIENT_FETCH-REGISTRY=true
+      - EUREKA_CLIENT_REGISTER-WITH-EUREKA=true
       - SECRET_KEY=terra-auth-secret-key-2024-change-in-production
       - REDIS_URL=redis://terra-redis:6379/0
       - ALLOWED_HOSTS=localhost
@@ -237,12 +237,12 @@ services:
       - SPRING_APLLICATION_NAME= terra-proxy-service
       - SPRING_CLOUD_CONFIG_URI=http://terra-conf-service:8080/
       - SPRING_CONFIG_IMPORT=configserver:http://terra-conf-service:8080/
-      - EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE=http://terra-registry-service:8761/eureka/
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
       - EUREKA_CLIENT_ENABLED=true
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - EUREKA_INSTANCE_HOSTNAME=terra-users-service
-      - EUREKA_CLIENT_FETCH_REGISTRY=true
-      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=true
+      - EUREKA_CLIENT_FETCH-REGISTRY=true
+      - EUREKA_CLIENT_REGISTER-WITH-EUREKA=true
     networks:
       - terra-network
 
@@ -251,14 +251,14 @@ services:
     image: mysql:8.0
     container_name: terabia_product
     environment:
-      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ROOT_PASSWORD= root
       - MYSQL_DATABASE=terabia_product_db
       - MYSQL_USER=terabia_user
       - MYSQL_PASSWORD=terabia_password
     ports:
       - "3307:3306"
     volumes:
-      - terabia-product-data:/var/lib/mysql
+      - terabia_product-data:/var/lib/mysql
     networks:
       - terra-network
     healthcheck:
@@ -286,12 +286,12 @@ services:
         - DEBUG=TRUE
         - SPRING_CLOUD_CONFIG_URI=http://terra-conf-service:8080/
         - SPRING_CONFIG_IMPORT=configserver:http://terra-conf-service:8080/
-        - EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE=http://terra-registry-service:8761/eureka/
+        - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
         - EUREKA_CLIENT_ENABLED=true
         - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
         - EUREKA_INSTANCE_HOSTNAME=terra-product-service
-        - EUREKA_CLIENT_FETCH_REGISTRY=true
-        - EUREKA_CLIENT_REGISTER_WITH_EUREKA=true
+        - EUREKA_CLIENT_FETCH-REGISTRY=true
+        - EUREKA_CLIENT_REGISTER-WITH-EUREKA=true
       networks:
         - terra-network
 
@@ -300,10 +300,9 @@ services:
     image: mysql:8.0
     container_name: terra-notification-db
     environment:
-      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ROOT_PASSWORD= root
       - MYSQL_DATABASE=terra_notification_db
       - MYSQL_USER=terra_notification_user
-      - MYSQL_PASSWORD=
     ports:
       - "3309:3306"
     volumes:
@@ -336,7 +335,7 @@ services:
       - SPRING_APLLICATION_NAME= terra-notification-service
       - SPRING_CLOUD_CONFIG_URI=http://terra-conf-service:8080/
       - SPRING_CONFIG_IMPORT=configserver:http://terra-conf-service:8080/
-      - EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE=http://terra-registry-service:8761/eureka/
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://terra-registry-service:8761/eureka/
       - EUREKA_CLIENT_ENABLED=true
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - EUREKA_INSTANCE_HOSTNAME=terra-notification-service
@@ -404,6 +403,6 @@ volumes:
   terra-redis-data:
   terra-auth-data:
   terra-users-data:
-  terabia-product-data:
+  terabia_product-data:
   terra-notification-data:
   terra-rabbitmq-data:

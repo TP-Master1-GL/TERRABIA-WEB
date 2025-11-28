@@ -11,6 +11,11 @@ from django.views import View
 from django.db import connection
 import redis
 import requests
+from django.http import JsonResponse
+from django.views import View
+import redis
+import psycopg2
+from django.conf import settings
 
 from .serializers import (
     OrderSerializer, CreateOrderSerializer, UpdateOrderStatusSerializer,
@@ -373,38 +378,71 @@ def error_500(request):
     
 
 
+# class HealthCheckView(View):
+#     def get(self, request):
+#         # Vérifier la base de données
+#         try:
+#             with connection.cursor() as cursor:
+#                 cursor.execute("SELECT 1")
+#             db_status = "UP"
+#         except Exception:
+#             db_status = "DOWN"
+
+#         # Vérifier Redis
+#         try:
+#             r = redis.Redis(
+#                 host=settings.CHANNEL_LAYERS['default']['CONFIG']['hosts'][0][0],
+#                 port=settings.CHANNEL_LAYERS['default']['CONFIG']['hosts'][0][1],
+#                 socket_connect_timeout=3
+#             )
+#             r.ping()
+#             redis_status = "UP"
+#         except Exception:
+#             redis_status = "DOWN"
+
+#         health_status = {
+#             "status": "UP" if db_status == "UP" else "DOWN",
+#             "components": {
+#                 "db": {
+#                     "status": db_status
+#                 },
+#                 "redis": {
+#                     "status": redis_status
+#                 }
+#             }
+#         }
+
+#         return JsonResponse(health_status)
+    
+    
 class HealthCheckView(View):
     def get(self, request):
+        """Endpoint de health check pour Eureka"""
+        checks = {
+            'status': 'UP',
+            'components': {}
+        }
+        
         # Vérifier la base de données
         try:
+            from django.db import connection
             with connection.cursor() as cursor:
                 cursor.execute("SELECT 1")
-            db_status = "UP"
-        except Exception:
-            db_status = "DOWN"
-
+            checks['components']['database'] = {'status': 'UP'}
+        except Exception as e:
+            checks['components']['database'] = {'status': 'DOWN', 'details': str(e)}
+            checks['status'] = 'DOWN'
+        
         # Vérifier Redis
         try:
             r = redis.Redis(
                 host=settings.CHANNEL_LAYERS['default']['CONFIG']['hosts'][0][0],
                 port=settings.CHANNEL_LAYERS['default']['CONFIG']['hosts'][0][1],
-                socket_connect_timeout=3
+                socket_connect_timeout=1
             )
             r.ping()
-            redis_status = "UP"
-        except Exception:
-            redis_status = "DOWN"
-
-        health_status = {
-            "status": "UP" if db_status == "UP" else "DOWN",
-            "components": {
-                "db": {
-                    "status": db_status
-                },
-                "redis": {
-                    "status": redis_status
-                }
-            }
-        }
-
-        return JsonResponse(health_status)
+            checks['components']['redis'] = {'status': 'UP'}
+        except Exception as e:
+            checks['components']['redis'] = {'status': 'DOWN', 'details': str(e)}
+        
+        return JsonResponse(checks, status=200 if checks['status'] == 'UP' else 503)
